@@ -1,6 +1,6 @@
 import { trackRow } from "../components/track-row.js";
 import { icon } from "../components/icons.js";
-import { setQueue, play } from "../player.js";
+import { playWithLyrics } from "./now-playing.js";
 import * as pl from "../data/playlists.js";
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
@@ -46,8 +46,7 @@ function onClick(e) {
   if (act === "remove") return pl.removeSongAt(open, Number(el.closest(".track").dataset.i));
   const row = e.target.closest(".track");
   if ((act === "play" && songs.length) || (row && !act)) {
-    setQueue(songs);
-    play(row ? Number(row.dataset.i) : 0);
+    playWithLyrics(songs, row ? Number(row.dataset.i) : 0);
   }
 }
 

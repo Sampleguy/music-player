@@ -16,7 +16,7 @@ export function makeFilter(songs) {
 
 // Search box on top, occasion chips (components/occasion-chips.js fills .chips), song list below.
 // `tools` (.lib-keys in the Library bar) gets the Grid / List key and the lyrics filter key (B-48).
-// Each keystroke or filter pick redraws the list. With a lyrics filter on, a tap opens Now playing with lyrics.
+// Each keystroke or filter pick redraws the list.
 export function showSearch(root, songs, tools) {
   root.innerHTML = `<label class="search">${icon("search")}<input type="search" placeholder="Search songs, artists, albums" aria-label="Search"></label>
     <div class="chips" hidden></div><div class="results"></div>`;

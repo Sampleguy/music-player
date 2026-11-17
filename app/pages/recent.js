@@ -1,5 +1,5 @@
 import { trackRow } from "../components/track-row.js";
-import { setQueue, play } from "../player.js";
+import { playWithLyrics } from "./now-playing.js";
 import { recentSongs, playCount, onPlaysChange } from "../data/plays.js";
 
 const SHOW = 50;
@@ -15,8 +15,7 @@ export function openRecent() {
       if (e.target.closest("[data-act]")?.dataset.act === "close") return dialog.close();
       const row = e.target.closest(".track");
       if (!row) return;
-      setQueue(recentSongs(SHOW));
-      play(Number(row.dataset.i));
+      playWithLyrics(recentSongs(SHOW), Number(row.dataset.i));
     });
     onPlaysChange(draw);
     document.body.append(dialog);

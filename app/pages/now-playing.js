@@ -1,4 +1,4 @@
-import { audio, onChange, current, toggle, next, prev } from "../player.js";
+import { audio, onChange, current, toggle, next, prev, setQueue, play } from "../player.js";
 import * as q from "../queue.js";
 import { icon, swirl } from "../components/icons.js";
 import { wireSeekBar } from "../components/seek-bar.js";
@@ -19,8 +19,21 @@ export function mountNowPlaying() {
 
 export function openNowPlaying() {
   mountNowPlaying();
-  dialog.showModal();
+  if (!dialog.open) dialog.showModal();
   drawSong(current());
+}
+
+// F-31: every tap on a song (list, grid, search, playlists, recent, chips) plays songs[i].
+// Mac Two cards: Now playing sits beside the list, so its lyrics show. Full library: no room, lyrics come on
+// when it closes (components/view-switch.js). iPhone: plays only, unless `phone` (lyrics filter on, B-45):
+// then the pop-up opens on the lyrics.
+export function playWithLyrics(songs, i, phone = false) {
+  setQueue(songs);
+  play(i);
+  const wide = matchMedia("(min-width: 900px)").matches;
+  if (wide ? document.documentElement.dataset.view === "full" : !phone) return;
+  if (!wide) openNowPlaying();
+  setLyrics(true);
 }
 
 function build() {

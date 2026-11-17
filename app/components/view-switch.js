@@ -7,13 +7,13 @@ const root = document.documentElement;
 const full = () => root.dataset.view === "full";
 const wide = matchMedia("(min-width: 900px)");
 
-// `lyrics`: going back with the lyrics on (the bar's Lyrics key). Full library always turns them off (no room).
-function setView(on, lyrics = false) {
+// Full library turns the lyrics off (no room); going back always shows them (F-31).
+function setView(on) {
   if (on === full()) return;
   try { on ? localStorage.setItem("view", "full") : localStorage.removeItem("view"); } catch {} // private mode: works until reload
   const flip = () => {
     if (on) root.dataset.view = "full"; else delete root.dataset.view;
-    setLyrics(lyrics);
+    setLyrics(!on);
     document.querySelectorAll(".view-key").forEach(drawKey);
   };
   // Smooth move: the browser morphs the cards (.vt names them, only while it runs). No support / less motion: instant.
@@ -30,12 +30,11 @@ export function wireViewKey(btn) {
   btn.addEventListener("click", () => setView(!full()));
 }
 
-// Full library: the Now playing bar. Its Lyrics key goes back to two cards with lyrics on; a click anywhere
-// else on the bar (cover, title) goes back too. Its other keys and the seek bar work as usual.
+// Full library: the Now playing bar. Its Lyrics key, or a click anywhere else on the bar (cover, title),
+// goes back to two cards with lyrics on. Its other keys and the seek bar work as usual.
 document.addEventListener("click", (e) => {
   if (!full() || !wide.matches || !e.target.closest(".np:not([open])")) return;
-  const lyrics = !!e.target.closest("[data-act=lyrics]");
-  if (lyrics) e.stopPropagation(); // not now-playing.js's own toggle
+  if (e.target.closest("[data-act=lyrics]")) e.stopPropagation(); // not now-playing.js's own toggle
   else if (e.target.closest("button, input")) return;
-  setView(false, lyrics);
+  setView(false);
 }, true);

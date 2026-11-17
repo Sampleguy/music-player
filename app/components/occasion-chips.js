@@ -1,5 +1,5 @@
 import { allPlaylists, playlistSongs, onPlaylistsChange } from "../data/playlists.js";
-import { setQueue, play } from "../player.js";
+import { playWithLyrics } from "../pages/now-playing.js";
 
 // Occasion selector under the search box: one chip per playlist (named by occasion).
 // Tap = play that playlist from the start. No playlists: the row is hidden.
@@ -12,7 +12,7 @@ export function wireChips(box) {
       const b = document.createElement("button");
       b.className = "chip key";
       b.textContent = p.name; // names are typed by the owner: text only, never HTML
-      b.onclick = () => { setQueue(playlistSongs(p)); play(0); };
+      b.onclick = () => playWithLyrics(playlistSongs(p), 0);
       box.append(b);
     });
   };
