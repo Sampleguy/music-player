@@ -6,6 +6,19 @@ A small private music player for your own songs. The songs sit in a private Clou
 >
 > **Only music you own.** Use it only for songs you own or have the right to copy. Uploading or sharing music you do not have the rights to can break copyright law in your country. You are responsible for what you put in it; the authors take no responsibility for how it is used. Keep the bucket private. Do not share your password or your address.
 
+## Screenshots
+Demo songs only (made-up titles, covers and lyrics). More in [`docs/screenshots/`](docs/screenshots/).
+
+![Mac, Retro look with lyrics](docs/screenshots/mac-retro-lyrics.png)
+![Mac, Glass look with lyrics](docs/screenshots/mac-glass-lyrics.png)
+
+<p>
+<img src="docs/screenshots/iphone-classic-player.png" width="24%" alt="iPhone, Classic player">
+<img src="docs/screenshots/iphone-glass-lyrics.png" width="24%" alt="iPhone, Glass lyrics">
+<img src="docs/screenshots/iphone-retro-grid.png" width="24%" alt="iPhone, Retro grid">
+<img src="docs/screenshots/iphone-terminal-list.png" width="24%" alt="iPhone, Terminal list">
+</p>
+
 ## What you need
 - A computer with Mac, Windows or Linux. On Windows or Linux, skip the import script in step 6 (it uses macOS tools) and add songs with the app's Import key.
 - [Node.js](https://nodejs.org) (the LTS version).
