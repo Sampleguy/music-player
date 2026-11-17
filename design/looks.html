@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en" data-look="glass">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Looks Sample</title>
+<!-- B-26 design sample. Colors come from app/themes/colors (colors/ and icons.js are links to the app files, not copies). -->
+<link id="color" rel="stylesheet" href="colors/cream.css">
+<link rel="stylesheet" href="looks.css">
+<link id="look" rel="stylesheet" href="looks-glass.css">
+<script>
+  try {
+    var L = { glass: ['cream', 'ocean'], terminal: ['black', 'olive'] };
+    var l = localStorage.getItem('looks-look'), c = localStorage.getItem('looks-color');
+    if (!L[l]) l = 'glass';
+    if (L[l].indexOf(c) < 0) c = L[l][0];
+    document.documentElement.dataset.look = l;
+    document.getElementById('look').href = 'looks-' + l + '.css';
+    document.getElementById('color').href = 'colors/' + c + '.css';
+  } catch (e) {}
+</script>
+</head>
+<body>
+<div class="backdrop" id="bd" aria-hidden="true"></div>
+<main class="wrap">
+  <header class="top">
+    <div class="pick" role="group" aria-label="Look">
+      <button class="seg" data-look="glass">Glass</button>
+      <button class="seg" data-look="terminal">Terminal</button>
+    </div>
+    <div class="pick" role="group" aria-label="Color" id="colors"></div>
+  </header>
+  <p class="intro">Design sample for card B-26. Fake songs, nothing real. Switch the look and color at the top. Tap rows, chips, keys, the progress bar and Lyrics.</p>
+
+  <section class="stage">
+    <div class="panel lib" data-title="library">
+      <div class="prompt">~/music $ <span>ls songs</span></div>
+      <div class="lib-head"><h1>Library</h1><span class="count" id="count"></span></div>
+      <label class="search"><span data-i="search"></span><input id="q" type="search" placeholder="Search songs" aria-label="Search songs" autocomplete="off"></label>
+      <div class="chips" id="chips"></div>
+      <ul class="rows" id="rows"></ul>
+      <div class="mini">
+        <span class="cover" id="m-cover"></span>
+        <div class="m-info"><div class="m-title" id="m-title"></div><div class="m-sub" id="m-artist"></div></div>
+        <span class="ascii" id="m-ascii" aria-hidden="true"></span>
+        <button class="btn play" data-act="play" aria-label="Play"><span data-i="play"></span><span class="tx">play</span></button>
+        <button class="btn" data-act="next" aria-label="Next"><span data-i="next"></span><span class="tx">next</span></button>
+        <div class="m-prog"><i id="m-fill"></i></div>
+      </div>
+    </div>
+
+    <div class="panel np" id="np" data-title="now playing">
+      <div class="np-main">
+        <span class="cover big" id="n-cover"></span>
+        <div class="np-text"><div class="n-title" id="n-title"></div><div class="n-artist" id="n-artist"></div></div>
+        <div class="seek-row">
+          <span class="ascii" id="n-ascii" aria-hidden="true"></span>
+          <input type="range" class="seek" id="seek" min="0" max="100" value="0" aria-label="Seek">
+        </div>
+        <div class="times"><span id="n-pos">0:00</span><span id="n-dur">0:00</span></div>
+        <div class="keys">
+          <button class="btn" data-act="shuffle" aria-pressed="false" aria-label="Shuffle"><span data-i="shuffle"></span><span class="tx">shuf</span></button>
+          <button class="btn" data-act="prev" aria-label="Previous"><span data-i="prev"></span><span class="tx">prev</span></button>
+          <button class="btn play big" data-act="play" aria-label="Play"><span data-i="play"></span><span class="tx">play</span></button>
+          <button class="btn" data-act="next" aria-label="Next"><span data-i="next"></span><span class="tx">next</span></button>
+          <button class="btn" data-act="repeat" aria-pressed="false" aria-label="Repeat"><span data-i="repeat"></span><span class="tx">rep</span></button>
+        </div>
+        <div class="keys sub">
+          <button class="btn" data-act="lyrics" id="ly-key" aria-pressed="false" aria-label="Lyrics"><span data-i="lyrics"></span><span class="tx">lyrics</span></button>
+          <button class="btn" data-act="queue" aria-label="Queue"><span data-i="queue"></span><span class="tx">queue</span></button>
+        </div>
+      </div>
+      <aside class="lyrics" aria-label="Lyrics">
+        <div class="ly-head"><span class="ly-name">Lyrics</span><button class="btn sm" data-act="lyrics" aria-label="Close lyrics"><span data-i="close"></span><span class="tx">x</span></button></div>
+        <div class="ly-lines" id="ly"></div>
+      </aside>
+    </div>
+  </section>
+
+  <footer>Sample only. Fake songs and lyrics, written for this page. Tell Claude “yes” or list changes.</footer>
+</main>
+<script type="module" src="looks.js"></script>
+</body>
+</html>

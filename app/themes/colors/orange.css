@@ -1,0 +1,30 @@
+/* Orange: the B-20 sample's warm version, orange play key and accents. Colors only. Same names in every file in colors/. Shapes and fonts are in looks/.
+   Classic uses bg..backdrop; Retro also uses ink..screen-dot (outlines, keys, LCD screens). */
+:root {
+  --bg: #FFE8D1;
+  --dot: #F7D6B4;
+  --surface: #FFFFFF;
+  --bar: #FFF6EC;
+  --text: #231F20;
+  --text-dim: #7A5E4C;
+  --border: #F7D6B4;
+  --accent: #F26B1D;
+  --accent-text: #A84A12;
+  --on-accent: #231F20;
+  --error: #B3261E;
+  --backdrop: rgba(35, 31, 32, 0.45);
+  --ink: #231F20;
+  --shadow: #231F20;
+  --sink: rgba(35, 31, 32, 0.16);
+  --hi: rgba(255, 255, 255, 0.6);
+  --key: #FFFFFF;
+  --key-2: #FFE1C2;
+  --key-ink: #231F20;
+  --play: #FF8A3D;
+  --play-ink: #231F20;
+  --screen: #F4F1EA;
+  --screen-ink: #231F20;
+  --screen-dim: #7A6A5A;
+  --screen-dot: rgba(35, 31, 32, 0.07);
+  color-scheme: light;
+}

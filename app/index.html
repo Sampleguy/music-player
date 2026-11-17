@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Music</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/icons/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Music">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <style>
+    /* Base layout. Look files (themes/looks/) load after this, so they win ties. */
+    body { margin: 0; padding-top: env(safe-area-inset-top); background-color: var(--bg); color: var(--text); font-family: var(--font); }
+    .login { display: grid; gap: var(--space); max-width: 320px; margin: 20vh auto; padding: var(--space); }
+    .login input, .login button { font: inherit; font-size: 17px; padding: 12px; border: 0; border-radius: var(--radius); }
+    .login input { background: var(--surface); color: var(--text); }
+    .login button { background: var(--accent); color: var(--on-accent); font-weight: 600; }
+    .error { color: var(--error); margin: 0; min-height: 1.2em; }
+    .search { display: flex; align-items: center; gap: 8px; margin: 8px var(--space); padding: 10px 12px; border-radius: var(--radius); background: var(--surface); color: var(--text-dim); }
+    .search input { flex: 1; min-width: 0; padding: 0; font: inherit; font-size: 17px; border: 0; outline: none; background: none; color: var(--text); }
+    .tracks { list-style: none; margin: 0; padding: 0 0 var(--player-h); }
+    .track { display: flex; align-items: center; gap: 12px; padding: 8px var(--space); cursor: pointer; }
+    .track:active, .track:hover { background: var(--surface); }
+    .track.playing .title { color: var(--accent-text); }
+    .cover { width: var(--cover); height: var(--cover); flex: none; border-radius: 4px; background: var(--surface); object-fit: cover; }
+    .meta { min-width: 0; }
+    .title, .artist { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .artist { color: var(--text-dim); font-size: 14px; }
+    .empty { padding: var(--space); color: var(--text-dim); }
+    /* Library Grid (B-50): one tile per song, 3 across on phone; Mac: as many ~100 px tiles as fit (3 in the Library card, 5–6+ in Full library) */
+    .grid { list-style: none; margin: 0; padding: 0 var(--space) var(--player-h); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: calc(var(--space) * .75) calc(var(--space) * .5); }
+    .tile { min-width: 0; cursor: pointer; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+    .tile .cover { width: 100%; height: auto; aspect-ratio: 1; display: block; border-radius: var(--radius); }
+    .tile .name, .tile .sub { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .tile .name { margin-top: 4px; font-size: 12px; color: var(--text); }
+    .tile .sub { font-size: 11px; color: var(--text-dim); }
+    @media (hover: hover) { .tile:hover .name { color: var(--accent-text); } } /* mouse only: on touch it stuck after a tap (B-48) */
+    /* Phone (B-49): page locked like the Mac. Header, clock, search, chips, Grid/List stay; only .lib-scroll scrolls.
+       Looks flatten .home-list/.results (display: contents), so #app is a flex column in every look here. */
+    @media (max-width: 899px) {
+      html { position: fixed; inset: 0; height: 100%; overflow: hidden; overscroll-behavior: none; } /* fixed: iOS can't rubber-band the page (B-48) */
+      body { height: 100dvh; box-sizing: border-box; overflow: hidden; overscroll-behavior: none; display: flex; flex-direction: column; }
+      :root #app { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; width: 100%; box-sizing: border-box; overflow: hidden; }
+      .brand, :where(#app) > *, .home-list > *, .results > * { flex: none; }
+      .home-list, .results { display: flex; flex-direction: column; } /* looks set display: contents (wins: loads later) */
+      :root :is(.home-list, .results) { flex: 1 1 0; min-height: 0; }
+      :root .lib-scroll { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+      /* The card runs to the screen bottom, under the floating mini player; the list's end padding clears the player */
+      :root body { padding-bottom: 0; }
+      :root .lib-scroll > :is(.tracks, .grid) { padding-bottom: calc(var(--player-h) + env(safe-area-inset-bottom)); }
+    }
+    @media (min-width: 900px) { .grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); } :root[data-view="full"] .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); } }
+    #player { position: fixed; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px;
+      padding: 8px var(--space) calc(8px + env(safe-area-inset-bottom)); background: var(--bar); border-top: 1px solid var(--border); }
+    #player[hidden] { display: none; }
+    #player .now { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    #player .controls button { font-size: 22px; background: none; border: 0; color: var(--text); padding: 6px 10px; cursor: pointer; }
+    @media (max-width: 430px) { #player .controls button { padding: 6px 5px; } } /* 8 keys (B-33 Import) on one row on a phone */
+    .seek { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+    .seek input { flex: 1; min-width: 0; accent-color: var(--accent-text); }
+    #player .seek { grid-column: 1 / -1; }
+    #player .now { cursor: pointer; }
+    #player .msg { grid-column: 1 / -1; margin: 0; font-size: 14px; color: var(--error); }
+    #player .msg[hidden] { display: none; }
+    .ic { width: 16px; height: 16px; fill: currentColor; shape-rendering: crispEdges; vertical-align: -2px; }
+    #player .controls .ic { width: 24px; height: 24px; display: block; }
+    .row-btn.count { font-size: 15px; cursor: default; }
+    .row-btn { margin-left: auto; flex: none; font-size: 20px; background: none; border: 0; color: var(--text-dim); padding: 8px; cursor: pointer; }
+    dialog { background: var(--bar); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--space); }
+    dialog::backdrop { background: var(--backdrop); }
+    dialog button { font: inherit; cursor: pointer; }
+    .sheet { width: min(320px, 90vw); }
+    .sheet .title { margin: 0 0 var(--space); font-weight: 600; }
+    .sheet button { display: block; width: 100%; padding: 12px; margin-top: 8px; border: 0; border-radius: var(--radius); background: var(--surface); color: var(--text); }
+    .sheet button + .title { margin-top: calc(var(--space) * 1.5); }
+    .sheet button.on { background: var(--accent); color: var(--on-accent); font-weight: 600; }
+    .sheet button[hidden], .sheet label[hidden] { display: none; }
+    .sheet button:disabled { opacity: 0.5; cursor: default; }
+    .sheet label { display: block; padding: 8px 0; }
+    .sheet .name-set input { display: block; box-sizing: border-box; width: 100%; margin-top: 4px; padding: 10px; font: inherit; font-size: 17px; border: 0; border-radius: var(--radius); background: var(--surface); color: var(--text); }
+    .sheet.import { width: min(420px, 92vw); }
+    .sheet .files { list-style: none; margin: var(--space) 0 0; padding: 0; max-height: 50vh; overflow-y: auto; font-size: 14px; }
+    .sheet .files li { display: flex; gap: 8px; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--surface); }
+    .sheet .files .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sheet .files .state { flex: none; max-width: 50%; text-align: right; color: var(--text-dim); }
+    .sheet .files .check { justify-content: flex-start; align-items: flex-start; }
+    .sheet .files .pic { flex: none; display: grid; place-items: center; width: 56px; height: 56px; padding: 0; border-radius: var(--radius); background: var(--surface); color: var(--text-dim); font-size: 12px; overflow: hidden; cursor: pointer; }
+    .sheet .files .pic img { width: 100%; height: 100%; object-fit: cover; }
+    .sheet .files .fields { flex: 1; min-width: 0; }
+    .sheet .files .fields input { display: block; box-sizing: border-box; width: 100%; margin-bottom: 4px; padding: 6px 8px; font: inherit; font-size: 16px; border: 0; border-radius: var(--radius); background: var(--surface); color: var(--text); }
+    .sheet .files .badge { font-weight: 600; }
+    .sheet .files .check .state { max-width: none; }
+    .sheet .files .again { padding: 6px; margin-top: 4px; }
+    .sheet .msg { margin: 8px 0 0; min-height: 1.2em; font-size: 14px; color: var(--text-dim); overflow-wrap: anywhere; }
+    .queue { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; border: 0; border-radius: 0; padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); box-sizing: border-box; }
+    .queue header { display: flex; justify-content: space-between; align-items: center; padding: 0 var(--space); }
+    .queue header button { background: none; border: 0; color: var(--accent-text); font-size: 17px; font-weight: 600; }
+    .queue h3 { margin: var(--space) var(--space) 4px; font-size: 14px; color: var(--text-dim); }
+    .queue .tracks { padding-bottom: 0; }
+    .queue .track { cursor: pointer; }
+    .modes { display: flex; gap: 8px; padding: 0 var(--space); }
+    .modes button { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius); background: none; color: var(--text); }
+    .modes button.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+    .np { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; border: 0; border-radius: 0; box-sizing: border-box;
+      padding: calc(env(safe-area-inset-top) + 8px) var(--space) calc(env(safe-area-inset-bottom) + var(--space));
+      flex-direction: column; justify-content: center; gap: var(--space); }
+    .np[open] { display: flex; }
+    .np button { background: none; border: 0; color: var(--text); padding: 8px; }
+    .np .ic { width: 28px; height: 28px; display: block; }
+    .np-top { display: flex; justify-content: space-between; }
+    @media (hover: none) { .np-close { visibility: hidden; } } /* touch screens: swipe down closes */
+    .np-top .ic { width: 20px; height: 20px; }
+    .np-top .np-lyr { color: var(--text-dim); }
+    .np.lyrics .np-lyr { color: var(--accent-text); }
+    .np-lyrics { display: none; position: relative; width: min(100%, 480px); height: min(50dvh, 480px); align-self: center; overflow-y: auto; overscroll-behavior: contain; }
+    .np.lyrics .np-art { display: none; }
+    .np.lyrics .np-lyrics { display: block; }
+    .np .np-lyrics :is(button, p.line) { display: block; width: 100%; text-align: left; padding: 6px 0; font: inherit; font-size: 20px; font-weight: 600; color: var(--text-dim); }
+    .np .np-lyrics button.on { color: var(--text); }
+    .np .np-lyrics p.line { margin: 0; color: var(--text); } /* plain lyrics: all lines lit */
+    /* mouse only: line under the pointer lights up (click seeks there) */
+    @media (hover: hover) {
+      .np .np-lyrics button { cursor: pointer; padding: 6px 8px; border-radius: var(--radius); }
+      .np .np-lyrics button:hover { color: var(--text); background: color-mix(in srgb, var(--text) 8%, transparent); }
+    }
+    .np-lyrics-msg { margin: 0; height: 100%; display: grid; place-content: center; justify-items: center; gap: 12px; color: var(--text-dim); }
+    .np .np-lyrics button.np-lyrics-find { width: auto; padding: 8px 16px; border: 0; border-radius: var(--radius); background: var(--accent); color: var(--on-accent); font-size: 15px; }
+    .np-lyrics-ai { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px; }
+    .np-lyrics-ai span { padding: 2px 8px; border-radius: var(--radius); background: var(--accent); color: var(--on-accent); font-size: 12px; }
+    :root .np .np-lyrics .np-lyrics-ai button.np-lyrics-own { width: auto; margin: 0; padding: 4px 12px; font-size: 14px; } /* beats every look's lyric-line rule */
+    .np .np-lyrics button.np-lyrics-own { width: auto; margin: 12px 0; padding: 8px 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); font-size: 15px; }
+    .ly-edit, .ly-search { width: min(480px, 92vw); }
+    .ly-search .ly-row { display: flex; gap: 8px; }
+    .ly-search input { flex: 1; min-width: 0; padding: 10px; font: inherit; font-size: 16px; border: 0; border-radius: var(--radius); background: var(--surface); color: var(--text); }
+    .ly-search .ly-row button { width: auto; margin: 0; }
+    .ly-results { list-style: none; margin: 0; padding: 0; max-height: 50dvh; overflow-y: auto; }
+    .ly-results button { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; text-align: left; }
+    .ly-results .ly-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+    .ly-results .ly-info { grid-row: 2; font-size: 14px; color: var(--text-dim); }
+    .ly-results .ly-badge { grid-row: 1 / 3; align-self: center; padding: 2px 8px; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius); }
+    .ly-results .ly-badge.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+    .ly-edit .ly-row, .ly-edit .ly-tabs { display: flex; gap: 8px; }
+    .ly-edit textarea { box-sizing: border-box; width: 100%; height: 40dvh; margin-top: 8px; padding: 8px; font: inherit; font-size: 16px; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); }
+    .ly-edit .ly-sync p { margin: 8px 0; min-height: 1.3em; }
+    .ly-edit .ly-done { color: var(--text-dim); font-size: 14px; }
+    .ly-edit .ly-next { font-size: 20px; font-weight: 600; }
+    .ly-edit .ly-tap { padding: 32px 12px; font-size: 22px; font-weight: 700; background: var(--accent); color: var(--on-accent); touch-action: manipulation; }
+    .ly-edit .ly-tap:disabled { opacity: .5; }
+    .ly-edit .ly-msg { margin: 8px 0 0; min-height: 1.3em; font-size: 14px; color: var(--text-dim); }
+    .np-art { width: min(100%, 50dvh, 480px); aspect-ratio: 1; align-self: center; border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+    .np-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .np-meta .title { font-size: 22px; font-weight: 600; }
+    .np-meta .artist { font-size: 17px; }
+    /* Wrappers are for Retro; here their children sit straight in the column. */
+    .np-card, .np-main, .np-ly, .np-meta, .s-time { display: contents; }
+    .np-top { order: -3; } .np-art, .np-lyrics { order: -2; }
+    .np-info { width: min(100%, 480px); align-self: center; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 4px 8px;
+      font-size: 13px; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+    .np-info .title, .np-info .artist { grid-column: 1 / -1; text-align: center; color: var(--text); }
+    .np-info .artist { color: var(--text-dim); margin-bottom: 8px; }
+    .np-info .pos { grid-area: 3 / 1; } .np-info input { grid-area: 3 / 2; min-width: 0; accent-color: var(--accent); } .np-info .dur { grid-area: 3 / 3; }
+    .np-controls { display: flex; justify-content: space-between; align-items: center; width: min(100%, 360px); align-self: center; }
+    .np-controls button { position: relative; color: var(--text-dim); }
+    .np-controls button.on { color: var(--accent-text); }
+    .np-controls [data-act=prev], .np-controls [data-act=next] { color: var(--text); }
+    .np-controls .np-play { background: var(--accent); color: var(--on-accent); border-radius: 50%; padding: 18px; }
+    .np-controls .np-play .ic { width: 32px; height: 32px; }
+    .np-one { display: none; position: absolute; right: 0; top: 0; font-size: 11px; font-weight: 700; }
+    .np-controls .one .np-one { display: block; }
+    /* Home top: clock + greeting, occasion chips */
+    .clock { padding: var(--space) var(--space) 4px; }
+    .c-row { display: flex; align-items: baseline; gap: 10px; }
+    .c-time { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .c-date, .romaji { color: var(--text-dim); }
+    .hello { margin: 2px 0 0; font-size: 17px; }
+    .romaji { margin: 0; font-size: .8em; }
+    .chips { display: flex; gap: 8px; overflow-x: auto; padding: 0 var(--space) 8px; }
+    .chips[hidden] { display: none; }
+    .chip[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+    .chip { flex: none; padding: 8px 14px; border: 1px solid var(--border); border-radius: 99px; background: var(--surface); color: var(--text); font: inherit; font-size: 15px; cursor: pointer; }
+    /* Library bar keys (B-48): Grid / List, lyrics filter + badge + menu. :where keeps them weak, so a look's .key rules win */
+    .bar { flex-wrap: wrap; row-gap: 8px; } .bar .count { white-space: nowrap; } /* narrow card: the keys move to a second line */
+    .lib-tools, .lib-keys { display: flex; align-items: center; gap: 8px; margin-left: auto; align-self: center; } .lib-keys { margin: 0; }
+    :where(.lib-keys) .key { position: relative; box-sizing: border-box; width: 36px; min-width: 36px; height: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border); border-radius: 99px; background: var(--surface); color: var(--text); cursor: pointer; }
+    :where(.lib-keys) .key[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+    .lib-keys .key .ic { display: inline-block; width: 18px; height: 18px; }
+    .lib-keys .key::before, .lib-keys .key::after { content: none; }
+    .lyr-wrap { position: relative; display: flex; }
+    .lyr-key .badge { position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; padding: 0 4px; box-sizing: border-box; border-radius: 99px; box-shadow: 0 0 0 2px var(--bg);
+      background: var(--accent); color: var(--on-accent); font: 700 11px/18px var(--font); text-align: center; }
+    .lyr-key .badge[hidden], .lyr-menu[hidden] { display: none; }
+    .lyr-menu { position: absolute; z-index: 20; top: calc(100% + 8px); right: 0; display: grid; min-width: 180px; padding: 4px; border: 1px solid var(--border);
+      border-radius: var(--radius); background: var(--bg); box-shadow: 0 8px 24px var(--sink); font: 15px var(--font); letter-spacing: normal; text-transform: none; }
+    .lyr-menu button { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 0; border-radius: var(--radius); background: none; color: var(--text); font: inherit; text-align: left; white-space: nowrap; cursor: pointer; }
+    .lyr-menu button[aria-pressed="true"] { color: var(--accent-text); font-weight: 700; }
+    .lyr-menu .ic { width: 14px; height: 14px; }
+    /* Retro-only pieces (looks/retro.css shows them) */
+    .brand, .bar, .np-head, .np-keys, .ly-head, .lvl, .track .t, .queue h2 .jp, .q-back { display: none; }
+    /* Mac-only pieces (layouts/full-library.css shows them) */
+    .track .album, .cols, #app .view-key { display: none; }
+    .pl-name { margin: 8px var(--space); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  </style>
+  <link rel="stylesheet" href="/themes/looks/classic.css">
+  <link rel="stylesheet" href="/themes/colors/black.css">
+  <link rel="stylesheet" href="/themes/layouts/two-cards.css">
+  <link rel="stylesheet" href="/themes/layouts/full-library.css">
+  <link rel="stylesheet" id="look">
+  <link rel="stylesheet" id="color">
+  <script>
+    // Picked look + color (components/theme-picker.js) and the Mac view (components/view-switch.js) load before the page draws: no flash.
+    // Classic + Black always load underneath, so a file missing offline falls back to them.
+    try {
+      const old = localStorage.getItem("theme"); // before B-21: one "theme" (dark/light/ocean)
+      if (old) { if (old === "ocean") localStorage.setItem("color", "ocean"); localStorage.removeItem("theme"); }
+      let look = localStorage.getItem("look");
+      if (look && !["classic", "retro", "glass", "terminal"].includes(look)) localStorage.setItem("look", look = "retro"); // B-34: Retro's old saved name
+      const color = localStorage.getItem("color") || (look === "retro" || look === "glass" ? "cream" : ""); // Retro's / Glass's own paint unless a color was picked
+      for (const [kind, v] of [["look", look], ["color", color]])
+        // classic/black are already loaded underneath; Classic's own rules also need link#look empty
+        if (/^[a-z]+$/.test(v || "") && v !== "classic" && v !== "black") document.getElementById(kind).href = `/themes/${kind}s/${v}.css`;
+      localStorage.removeItem("layout"); // B-29's Layout picker is gone (B-36)
+      if (localStorage.getItem("view") === "full") document.documentElement.dataset.view = "full"; // Full library (Mac only, by CSS)
+    } catch {}
+  </script>
+</head>
+<body>
+  <header class="brand"><span class="tile-lcd" aria-hidden="true">M</span><div class="word">Music<small lang="ja">おんがく · 音楽</small></div><div class="brand-keys"></div></header>
+  <main id="app"></main>
+  <footer id="player" hidden></footer>
+  <script type="module">
+    import { getLibrary, getState } from "/data/api.js";
+    import { showLogin } from "/pages/login.js";
+    import { showSearch } from "/pages/search.js";
+    import { setQueue } from "/player.js";
+    import { showMiniPlayer } from "/components/mini-player.js";
+    import { loadPlaylists } from "/data/playlists.js";
+    import { loadPlays } from "/data/plays.js";
+    import { showHomeTop } from "/components/home-top.js";
+    import { wireChips } from "/components/occasion-chips.js";
+    import { mountNowPlaying } from "/pages/now-playing.js";
+    import { onImported } from "/components/import-dialog.js";
+    import { sortTracks } from "/data/track-rules.js";
+
+    const root = document.getElementById("app");
+    const bar = document.getElementById("player");
+    function showHome(songs) {
+      setQueue(songs); // so space bar / Play works before any tap
+      root.innerHTML = `<div class="home-top"></div><div class="home-list"></div>`;
+      showHomeTop(root.querySelector(".home-top"), songs);
+      showSearch(root.querySelector(".home-list"), songs, root.querySelector(".lib-keys"));
+      wireChips(root.querySelector(".chips"));
+      getState().then((state) => { loadPlaylists(songs, state); loadPlays(songs, state); });
+      showMiniPlayer(bar);
+      mountNowPlaying();
+      bar.hidden = false;
+      // New songs from Import: added to the same list (the queue keeps its order), list redrawn in library order.
+      onImported((tracks) => {
+        songs.push(...tracks);
+        root.querySelector(".home-top .count").textContent = `${songs.length} songs`;
+        showSearch(root.querySelector(".home-list"), sortTracks([...songs]), root.querySelector(".lib-keys"));
+        wireChips(root.querySelector(".chips"));
+      });
+    }
+
+    async function start() {
+      let songs;
+      try { songs = await getLibrary(); }
+      catch { // no internet and no saved song list (sw.js) yet
+        root.innerHTML = `<p class="empty">No internet. Open the app once while online, then it works offline too.</p>`;
+        return;
+      }
+      songs ? showHome(songs) : showLogin(root, start);
+    }
+    start();
+    navigator.serviceWorker?.register("/sw.js");
+  </script>
+</body>
+</html>

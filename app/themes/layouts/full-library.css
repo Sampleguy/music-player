@@ -1,0 +1,55 @@
+/* Full library view (B-36): Mac only (≥ 900 px), on top of two-cards.css, while <html data-view="full">
+   (components/view-switch.js; the Library bar's key switches, the Now playing bar switches back).
+   The Library card takes the full width with songs in columns (title · artist · album · length);
+   Now playing becomes a bar at the bottom: cover, title + artist, seek bar, prev / play / next, Lyrics + Queue keys.
+   Placement only. Each look paints the bar, the columns and the key under :root[data-view="full"]
+   (Classic in classic-now-playing.css, since its rules are stronger). */
+@media (min-width: 900px) {
+  #app .view-key { display: inline-flex; align-items: center; cursor: pointer; white-space: nowrap; }
+
+  /* Smooth move: names for the browser's morph, set only while it runs (view-switch.js adds .vt) */
+  .vt #app { view-transition-name: lib; }
+  .vt .np { view-transition-name: np; }
+  .vt .np-art { view-transition-name: np-art; }
+
+  :root[data-view="full"] {
+    body { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; }
+
+    /* Songs in columns, with their titles on top (stay put while the list scrolls) */
+    #app .cols, #app .track {
+      display: grid; grid-template-columns: var(--cover) minmax(0, 3fr) minmax(0, 2fr) minmax(0, 2fr) 3.5em 40px;
+      align-items: center; column-gap: 16px;
+    }
+    #app .track .meta { display: contents; }
+    #app .track .album { display: block; }
+    #app .track .t { display: block; text-align: right; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+    #app .track .artist, #app .track .album { font-size: inherit; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #app .cols { position: sticky; top: 0; z-index: 1; padding: 8px var(--space); font-size: 12px; font-weight: 600; color: var(--text-dim); }
+    #app .cols span:first-child { grid-column: 2; }
+    #app .cols span:last-child { text-align: right; }
+
+    /* Now playing: the bar under the Library card. "#app ~" makes these beat every look's Two cards rules
+       (Classic's use an id); looks only add paint. */
+    #app ~ .np:not([open]) {
+      grid-area: 3 / 1; height: auto; margin-top: var(--cards-gap, 24px); cursor: pointer;
+      .np-card { display: block; width: auto; height: auto; max-width: none; max-height: none; overflow: visible; }
+      .np-main {
+        display: grid; grid-template-columns: 68px minmax(0, 1fr) auto auto; align-items: center; justify-items: stretch; justify-self: stretch;
+        gap: 0 24px; width: auto; max-width: none;
+      }
+      :is(.np-top, .np-head, .np-ly, .lvl, [data-act=shuffle], [data-act=repeat]) { display: none; }
+      .np-art { display: block; width: 68px; height: 68px; transform: none; }
+      /* title + artist, then time · seek bar · length on one line (Retro: its screen holds title, artist and times) */
+      .np-info { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(160px, 1.4fr) auto; align-items: center; gap: 0 12px; width: auto; margin: 0; }
+      .np-info .title { grid-area: 1 / 1; margin: 0; }
+      .np-info .artist { grid-area: 2 / 1; margin: 0; }
+      .np-info .pos { grid-area: 1 / 2 / 3; }
+      .np-info input { grid-area: 1 / 3 / 3; }
+      .np-info .dur { grid-area: 1 / 4 / 3; justify-self: auto; }
+      .np-info :is(.title, .artist) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+      .np-controls { width: auto; gap: 8px; }
+      .np-keys { display: flex; gap: 8px; }
+      .np-keys .np-lykey { display: inline-flex; }
+    }
+  }
+}

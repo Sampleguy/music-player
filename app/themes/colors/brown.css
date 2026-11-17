@@ -1,0 +1,30 @@
+/* Brown: dark coffee background, amber accent. Colors only. Same names in every file in colors/. Shapes and fonts are in looks/.
+   Classic uses bg..backdrop; Retro also uses ink..screen-dot (outlines, keys, LCD screens). */
+:root {
+  --bg: #1a1410;
+  --dot: #3a2e24;
+  --surface: #2a211a;
+  --bar: #211a14;
+  --text: #f3ebe2;
+  --text-dim: #bba897;
+  --border: #3a2e24;
+  --accent: #e0a458;
+  --accent-text: #e0a458;
+  --on-accent: #1a1410;
+  --error: #ff8a80;
+  --backdrop: rgba(0, 0, 0, 0.6);
+  --ink: #6a5e54;
+  --shadow: #6a5e54;
+  --sink: rgba(0, 0, 0, 0.5);
+  --hi: rgba(255, 255, 255, 0.14);
+  --key: #38322d;
+  --key-2: #2b2521;
+  --key-ink: #f3ebe2;
+  --play: #e0a458;
+  --play-ink: #1a1410;
+  --screen: #2a2216;
+  --screen-ink: #f6d9a8;
+  --screen-dim: #c6a677;
+  --screen-dot: #f6d9a814;
+  color-scheme: dark;
+}

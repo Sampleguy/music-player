@@ -1,0 +1,31 @@
+/* Cream: the base look. Same variable names in every theme file. */
+:root {
+  --page: #EFEAE0;
+  --page-dot: #E2DACB;
+  --shell: #FAF7F2;
+  --shell-ink: #231F20;
+  --dim: #6B6461;
+  --ink: #231F20;
+  --shadow: #231F20;
+  --sink: rgba(35, 31, 32, 0.18);
+  --lcd: #E2E8DF;
+  --lcd-ink: #231F20;
+  --lcd-dim: #5E6A5C;
+  --lcd-dot: rgba(35, 31, 32, 0.07);
+  --key: #FFFFFF;
+  --key-2: #E6EBF0;
+  --key-ink: #231F20;
+  --play: #F6D365;
+  --play-ink: #231F20;
+  --accent: #F4A28C;
+  --accent-ink: #231F20;
+  --hi: rgba(255, 255, 255, 0.65);
+  --font: "M PLUS Rounded 1c", ui-rounded, system-ui, sans-serif;
+  --font-lcd: "DotGothic16", ui-monospace, monospace;
+  --font-logo: "Dela Gothic One", "M PLUS Rounded 1c", system-ui, sans-serif;
+  --line: 2.5px;
+  --radius: 24px;
+  --key-r: 12px;
+  --space: 16px;
+  color-scheme: light;
+}

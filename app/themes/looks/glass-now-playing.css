@@ -1,0 +1,132 @@
+/* Glass: Now playing, ported from the B-26 sample's .np panel (design/looks-glass.css).
+   iPhone: the same full-screen pop-up as Classic (swipe down / ✕ / Esc closes), drawn over its own blurred cover.
+   Wide screens (Mac): always-open frosted panel beside the library. Colors only through variables from colors/.
+   Imported by glass.css. */
+.np { background: var(--bg); color: var(--text); padding-left: 16px; padding-right: 16px; justify-content: center; }
+/* Frosted panel holding everything (like the sample), so no text ever sits on the bare cover (WCAG AA) */
+.np-card {
+  display: flex; flex-direction: column; gap: 14px; width: min(100%, 440px); min-height: 0; align-self: center; padding: 20px;
+  background: var(--sheen), var(--glass); border: var(--glass-line); border-radius: 28px; box-shadow: 0 24px 60px var(--sink);
+}
+.np.lyrics .np-card { flex: 1 1 auto; }
+/* same blurred cover + wash as the page (glass.css body::before), inside the pop-up's own layer */
+.np::before {
+  content: ""; position: fixed; inset: -100px; z-index: -1; pointer-events: none;
+  background: linear-gradient(var(--wash), var(--wash)), var(--art, none) center / cover no-repeat, var(--bg);
+  filter: blur(70px) saturate(1.6); transform: translateZ(0);
+}
+.np .np-top .np-lyr { display: none; } /* Lyrics key below does it */
+.np .np-top button { border-radius: 999px; }
+
+/* Big cover: eases in when playing (the play key says "Pause" while a song plays) */
+.np-art {
+  width: min(100%, 42dvh, 320px); border-radius: 22px; box-shadow: 0 24px 50px var(--sink);
+  transform: scale(.88); transition: transform .6s cubic-bezier(.2, .8, .2, 1);
+}
+.np:has(.np-play[aria-label="Pause"]) .np-art { transform: none; }
+
+/* Title, artist, seek bar, times */
+.np-info { width: min(100%, 360px); grid-template-columns: 1fr 1fr; gap: 0; font-size: .8rem; }
+.np-info .title, .np-info .artist { text-align: left; }
+.np-info .title { font-size: 1.6rem; font-weight: 800; letter-spacing: -.01em; }
+.np-info .artist { font-size: 1.1rem; color: var(--text-dim); margin: 0 0 10px; }
+.np-info .lvl { display: none; }
+.np-info .pos { grid-area: 4 / 1; }
+.np-info .dur { grid-area: 4 / 2; justify-self: end; }
+.np-info input {
+  grid-area: 3 / 1 / 4 / -1; -webkit-appearance: none; appearance: none; height: 28px; margin: 0; background: none; cursor: pointer;
+}
+.np-info input::-webkit-slider-runnable-track {
+  height: 6px; border-radius: 3px;
+  background: linear-gradient(to right, var(--text) var(--p, 0%), color-mix(in srgb, var(--text) 20%, transparent) var(--p, 0%));
+}
+.np-info input::-moz-range-track { height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--text) 20%, transparent); }
+.np-info input::-moz-range-progress { height: 6px; border-radius: 3px; background: var(--text); }
+.np-info input::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px; margin-top: -4px; border-radius: 50%; background: var(--text); transition: transform .2s;
+}
+.np-info input:active::-webkit-slider-thumb { transform: scale(1.4); }
+.np-info input::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: var(--text); }
+
+/* Keys: round, soft press; play is the big filled one */
+.np-controls { justify-content: center; gap: 14px; }
+.np-controls button, .np .np-keys button {
+  display: inline-grid; place-items: center; min-width: 44px; min-height: 44px; border-radius: 999px;
+  color: var(--text); transition: background-color .2s, transform .2s;
+}
+.np-controls button:hover, .np .np-keys button:hover { background: color-mix(in srgb, var(--text) 8%, transparent); }
+.np-controls button:active, .np .np-keys button:active { transform: scale(.92); }
+/* on keys and play: a white (or dark) glass disc, the theme's text color, instead of a flat accent color */
+.np-controls button.on, .np .np-keys button[aria-pressed="true"] { color: var(--bg); background: var(--text); }
+.np-controls .np-play, .np-controls .np-play:hover { width: 72px; height: 72px; padding: 0; background: var(--text); color: var(--bg); box-shadow: 0 8px 24px var(--sink); }
+.np-controls .np-play .ic { width: 34px; height: 34px; }
+.np-one { right: 4px; top: 4px; }
+/* Lyrics + Queue: small icon keys (the words stay for screen readers) */
+.np-keys { display: flex; justify-content: center; gap: 14px; }
+.np .np-keys button { font-size: 0; }
+.np .np-keys .ic { width: 22px; height: 22px; }
+
+/* Lyrics: bold lines; the current one full bright, the others dim (theme's AA dim color); starts near the top */
+.np-ly { display: none; }
+.np.lyrics .np-ly {
+  display: flex; flex-direction: column; order: -2; flex: 1 1 0; min-height: 0;
+  width: min(100%, 480px); align-self: center; animation: rise .5s cubic-bezier(.2, .8, .2, 1);
+}
+.ly-head { display: flex; justify-content: space-between; align-items: center; color: var(--text-dim); font-weight: 600; }
+.ly-head button { border-radius: 999px; }
+.ly-head .ic { width: 18px; height: 18px; }
+.np-lyrics, .np.lyrics .np-lyrics { order: 0; width: auto; height: auto; flex: 1 1 0; min-height: 0; padding: 4px 0 45%; scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(transparent, #000 4%, #000 85%, transparent); mask-image: linear-gradient(transparent, #000 4%, #000 85%, transparent); }
+.np-lyrics::-webkit-scrollbar { display: none; }
+.np .np-lyrics :is(button, p.line) {
+  width: calc(100% + 20px); margin: 0 -10px 10px; padding: 8px 10px; border-radius: 14px;
+  font-size: 1.3rem; font-weight: 700; line-height: 1.35; letter-spacing: -.01em;
+  color: var(--text-dim); transition: color .4s, background-color .2s;
+}
+.np .np-lyrics button.on { color: var(--text); font-weight: 800; }
+.np .np-lyrics p.line { color: var(--text); } /* plain lyrics: all lines lit */
+/* mouse only: a line lights up under the pointer and shows it can be clicked (click seeks there) */
+@media (hover: hover) {
+  .np .np-lyrics button { cursor: pointer; }
+  .np .np-lyrics button:hover { color: var(--text); background: color-mix(in srgb, var(--text) 9%, transparent); }
+}
+
+/* Two cards on Mac (themes/layouts/two-cards.css puts Now playing beside the library): a frosted panel.
+   ≥ 1100 px: cover column left, lyrics column right when on (like the sample); narrower: lyrics take the cover's place. */
+@media (min-width: 900px) {
+  :root {
+    .np:not([open])::before { display: none; } /* the page's own blurred cover shows through */
+    .np:not([open]) .np-card {
+      -webkit-backdrop-filter: var(--pane-blur); backdrop-filter: var(--pane-blur);
+      display: grid; gap: 14px 32px; align-content: start; width: auto; padding: 28px;
+      background: var(--glass); border: var(--glass-line); border-radius: 28px; box-shadow: 0 24px 60px var(--sink);
+      animation: rise .5s cubic-bezier(.2, .8, .2, 1);
+    }
+    .np:not([open]) .np-main { display: grid; gap: 14px; justify-items: center; align-content: start; }
+    .np:not([open]) .np-top { display: none; }
+    .np:not([open]) .np-info { width: 100%; }
+    .np:not([open]).lyrics .np-ly { display: grid; grid-template-rows: auto minmax(0, 1fr); order: 0; width: 100%; }
+    .np:not([open]) .np-lyrics { height: 340px; flex: none; }
+  }
+}
+@media (min-width: 1100px) {
+  :root {
+    /* one row that fills the panel: the cover column sits at the top, the lyrics column scrolls inside */
+    .np:not([open]) .np-card { grid-template-columns: 320px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); align-content: stretch; }
+    .np:not([open]).lyrics .np-art { display: block; }
+    .np:not([open]).lyrics .np-ly { height: 100%; min-height: 0; }
+    .np:not([open]) .np-lyrics { height: auto; align-self: stretch; }
+    .np .np-lyrics :is(button, p.line) { font-size: 1.625rem; margin-bottom: 14px; } /* 26 px */
+  }
+}
+/* Full library (themes/layouts/full-library.css places it): a slim frosted bar */
+@media (min-width: 900px) {
+  :root[data-view="full"] {
+    .np:not([open]) .np-card { padding: 14px 24px; border-radius: 24px; }
+    .np:not([open]) .np-art { border-radius: 12px; box-shadow: 0 8px 20px var(--sink); }
+    .np:not([open]) .np-info .title { font-size: 1.15rem; }
+    .np:not([open]) .np-info .artist { font-size: .95rem; }
+    .np:not([open]) .np-controls .np-play { width: 52px; height: 52px; }
+    .np:not([open]) .np-controls .np-play .ic { width: 26px; height: 26px; }
+  }
+}

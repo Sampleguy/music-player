@@ -1,0 +1,95 @@
+/* B-26 shared layout for both looks. Shapes, fonts and motion live in looks-glass.css / looks-terminal.css.
+   Colors only through the app's color variables (colors/*.css), except the fake cover art below. */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.wrap {
+  max-width: 1240px; margin: 0 auto; display: grid; gap: 20px;
+  padding-block: max(16px, env(safe-area-inset-top, 0px)) 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.top { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
+.pick { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg { min-height: 44px; padding: 0 16px; }
+.intro, footer { margin: 0; max-width: 64ch; color: var(--text-dim); font-size: .9rem; }
+
+/* Stage: phone = stacked; Mac = library column + now playing */
+.stage { display: grid; gap: 20px; align-items: start; }
+@media (min-width: 900px) { .stage { grid-template-columns: 380px 1fr; } }
+.panel { position: relative; min-width: 0; }
+
+/* Library */
+.prompt { display: none; }
+.lib-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.lib-head h1 { margin: 0; }
+.count { color: var(--text-dim); }
+.search { display: flex; align-items: center; gap: 8px; }
+.search input { flex: 1; min-width: 0; border: 0; background: none; outline: 0; height: 40px; }
+.search input::placeholder { color: var(--text-dim); opacity: 1; }
+.search:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex: none; min-height: 36px; border: 0; background: none; white-space: nowrap; }
+.rows { list-style: none; margin: 0; padding: 0; }
+.row { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 12px; cursor: pointer; }
+.info { min-width: 0; display: grid; }
+.title, .meta, .m-title, .m-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meta, .t, .m-sub { color: var(--text-dim); }
+.t { font-variant-numeric: tabular-nums; }
+.empty { padding: 16px 0; color: var(--text-dim); }
+
+/* Buttons: icon + text label; each look shows one of them */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-width: 44px; min-height: 44px; padding: 0; border: 0; background: none;
+}
+.btn.sm { min-width: 36px; min-height: 36px; }
+[data-i] { display: inline-flex; }
+.ic { display: block; width: 22px; height: 22px; fill: currentColor; }
+.btn.sm .ic { width: 18px; height: 18px; }
+
+/* Mini player */
+.mini { display: grid; grid-template-columns: auto 1fr auto auto auto; align-items: center; gap: 10px; position: relative; }
+.m-info { min-width: 0; }
+.ascii { white-space: pre; font-variant-numeric: tabular-nums; }
+
+/* Now playing: cover + controls, lyrics beside on wide screens, toggled on phone */
+.np-main { display: grid; gap: 14px; justify-items: center; align-content: start; }
+.cover { display: grid; place-items: center; flex: none; overflow: hidden; }
+.cover.big { width: min(100%, 320px); aspect-ratio: 1; }
+.np-text { width: 100%; min-width: 0; }
+.n-title, .n-artist { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.n-artist { color: var(--text-dim); }
+.seek-row { position: relative; width: 100%; display: grid; }
+.seek { width: 100%; margin: 0; }
+.times { width: 100%; display: flex; justify-content: space-between; color: var(--text-dim); font-size: .8rem; font-variant-numeric: tabular-nums; }
+.keys { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; }
+.lyrics { display: none; min-width: 0; }
+.ly-head { display: flex; align-items: center; justify-content: space-between; }
+.ly-lines { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
+.ly-lines::-webkit-scrollbar { display: none; }
+.ly-lines p { margin: 0; cursor: default; }
+.np.lyr-on .lyrics { display: grid; grid-template-rows: auto 1fr; }
+.np.lyr-on .ly-lines { height: 340px; }
+@media (max-width: 1099px) {
+  .np.lyr-on .np-main > .cover.big { display: none; }
+}
+@media (min-width: 1100px) {
+  .np { display: grid; grid-template-columns: 320px 1fr; gap: 32px; }
+  .np.lyr-on .ly-lines { height: 520px; }
+}
+
+/* Fake cover art: stands in for real cover images, so it keeps its own paint (not ported to the app). */
+[data-c="c1"] { background: linear-gradient(140deg, #f2a37b, #c9496f); }
+[data-c="c2"] { background: linear-gradient(140deg, #7d9ff0, #4b3fae); }
+[data-c="c3"] { background: linear-gradient(140deg, #6fd3bd, #2c6f8f); }
+[data-c="c4"] { background: linear-gradient(140deg, #f3cf6a, #d9772f); }
+.cover[data-c] { color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, .45); }
+
+.backdrop { display: none; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

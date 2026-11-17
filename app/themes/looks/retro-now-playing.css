@@ -1,0 +1,139 @@
+/* Retro: Now playing pop-up, ported from the sample's .np device (design/sample.css).
+   Still the same pop-up as Classic (opens from the mini player, swipe down / ✕ / Esc closes).
+   iPhone: lyrics panel takes the cover's place (like Classic). Wide screens (Mac): always-open card beside the library.
+   Colors only through variables from colors/. Imported by retro.css. */
+.np {
+  background-color: var(--bg); background-image: radial-gradient(var(--dot) 1.2px, transparent 1.4px); background-size: 18px 18px;
+  color: var(--text); overflow-y: auto;
+  padding: calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 16px);
+}
+.np[open] { display: block; }
+.np button { padding: 0; }
+.np .ic { width: 22px; height: 22px; }
+
+/* The device card */
+.np-card {
+  position: relative; display: grid; gap: 18px; max-width: var(--card); margin: 0 auto; padding: var(--space); overflow: hidden;
+  background: var(--bar); border: var(--line) solid var(--ink); border-radius: var(--radius); box-shadow: 4px 5px 0 var(--shadow);
+}
+.np-main { display: grid; gap: 14px; align-content: start; }
+.np-top, .np-art, .np-lyrics { order: 0; } /* undo Classic's column order */
+.np-top { display: flex; }
+.np-top .np-lyr { display: none; }
+.np-top .np-close { min-width: 36px; width: 36px; height: 36px; border-radius: 10px; border: 2px solid var(--ink); background: var(--key-2); color: var(--key-ink); box-shadow: 0 3px 0 var(--ink); }
+.np-top .ic { width: 18px; height: 18px; }
+@media (hover: none) { .np-top { display: none; } } /* touch: swipe down closes */
+
+.np-head { display: flex; justify-content: space-between; align-items: center; font: 400 .85rem var(--font-lcd); color: var(--text-dim); }
+.tag::before {
+  content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 6px;
+  border-radius: 50%; background: var(--accent); border: 1.5px solid var(--ink);
+}
+.swirl { width: 30px; height: 30px; color: var(--accent); }
+.swirl path { fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+.np-art, .np.lyrics .np-art {
+  display: block; width: min(100%, 300px); justify-self: center; align-self: auto; aspect-ratio: 1;
+  background: var(--key-2); border: var(--line) solid var(--ink); border-radius: 18px; box-shadow: 4px 5px 0 var(--shadow);
+}
+
+/* Screen: title, artist, level meter, times; then the seek bar */
+.np-info { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; width: auto; font-size: inherit; color: inherit; }
+.np-meta {
+  display: grid; gap: 4px; padding: 12px 14px; font-family: var(--font-lcd);
+  background-color: var(--screen); background-image: radial-gradient(var(--screen-dot) 1px, transparent 1.2px); background-size: 4px 4px;
+  color: var(--screen-ink); border: var(--line) solid var(--ink); border-radius: 14px; box-shadow: inset 0 3px 6px var(--sink);
+}
+.np-info .title, .np-info .artist { grid-column: auto; text-align: left; margin: 0; }
+.np-meta .title { font-size: 1.25rem; font-weight: 400; color: var(--screen-ink); }
+.np-meta .artist { font-size: 15px; color: var(--screen-dim); }
+.lvl { display: flex; gap: 3px; height: 12px; margin-top: 6px; }
+.lvl i { flex: 1; background: var(--screen-ink); opacity: .12; border-radius: 1px; transition: opacity .1s; }
+.lvl i.on { opacity: .85; }
+.s-time { display: flex; justify-content: space-between; font-size: .85rem; color: var(--screen-dim); font-variant-numeric: tabular-nums; }
+.np-info .pos, .np-info .dur { grid-area: auto; }
+.np-info input {
+  grid-area: auto; -webkit-appearance: none; appearance: none; width: 100%; height: 16px; margin: 4px 0; cursor: pointer;
+  border: 2px solid var(--ink); border-radius: 99px;
+  background: linear-gradient(var(--accent), var(--accent)) 0 0 / var(--p, 0%) 100% no-repeat, var(--key-2);
+  box-shadow: inset 0 2px 3px var(--sink);
+}
+.np-info input::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 34px; height: 24px; border-radius: 99px;
+  background: var(--key); border: 2px solid var(--ink); box-shadow: inset 0 2px 0 var(--hi), 2px 3px 0 var(--shadow);
+}
+
+/* Keys */
+.np-controls, .np-keys { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; width: auto; }
+.np-controls button, .np .np-keys button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; position: relative;
+  min-width: 48px; height: 48px; padding: 0 14px; font: inherit; font-weight: 700; font-size: .9rem;
+  border-radius: var(--key-r); border: 2px solid var(--ink); background: var(--key); color: var(--key-ink);
+  box-shadow: inset 0 2px 0 var(--hi), 0 3px 0 var(--ink); transition: transform .08s, box-shadow .08s, background-color .15s;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.np-controls button:active, .np .np-keys button:active { transform: translateY(2px); box-shadow: inset 0 2px 0 var(--hi), 0 1px 0 var(--ink); }
+.np-controls button { padding: 0; }
+.np-controls [data-act=prev], .np-controls [data-act=next] { color: var(--key-ink); }
+.np-controls [data-act=shuffle], .np-controls [data-act=repeat], .np .np-keys button { background: var(--key-2); }
+.np-controls button.on, .np .np-keys button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+.np-controls .np-play { min-width: 68px; height: 60px; padding: 0; border-radius: var(--key-r); background: var(--play); color: var(--play-ink); }
+.np-controls .np-play .ic { width: 28px; height: 28px; }
+.np-one { right: 3px; top: 1px; }
+.np-keys .ic { width: 20px; height: 20px; }
+
+/* Lyrics, iPhone: same behavior as Classic. The LCD panel takes the cover's place and fills the
+   whole Now playing card (title, seek bar and keys stay under it); ✕ brings the cover back.
+   It sits in the normal page flow: no sliding box, so iOS scrolls it like any list. */
+.np-ly {
+  display: none; flex-direction: column; min-height: 0; border-radius: 18px;
+  background-color: var(--screen); background-image: radial-gradient(var(--screen-dot) 1px, transparent 1.2px); background-size: 4px 4px;
+  color: var(--screen-ink); font-family: var(--font-lcd); border: var(--line) solid var(--ink);
+  box-shadow: inset 0 3px 6px var(--sink);
+}
+.np.lyrics .np-card { display: flex; flex-direction: column; gap: 14px; height: 100%; }
+.np.lyrics .np-main { display: contents; }
+.np.lyrics .np-info { align-self: stretch; }
+.np.lyrics .np-art { display: none; }
+.np.lyrics .np-top { order: -3; } .np.lyrics .np-head { order: -2; }
+.np.lyrics .np-ly { display: flex; order: -1; flex: 1 1 0; min-height: 200px; }
+.ly-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 10px 10px 14px; border-bottom: 2px dashed var(--screen-dim); }
+.ly-head .ic { width: 18px; height: 18px; }
+.np-lyrics, .np.lyrics .np-lyrics { display: block; position: relative; flex: 1 1 0; min-height: 0; width: auto; height: auto; overflow-y: auto; overscroll-behavior: contain; padding: 12px 14px 40%; }
+.np .np-lyrics :is(button, p.line) {
+  display: block; width: 100%; margin: 0 0 12px; padding: 0; text-align: left; font: 400 1.05rem var(--font-lcd);
+  color: var(--screen-dim); transform-origin: left; transition: color .2s, transform .2s;
+}
+.np .np-lyrics button.on { color: var(--screen-ink); transform: scale(1.06); }
+.np .np-lyrics p.line { color: var(--screen-ink); } /* plain lyrics: all lines lit */
+/* mouse only: line under the pointer lights up as a square LCD tint (click seeks there) */
+@media (hover: hover) {
+  .np .np-lyrics button { cursor: pointer; width: calc(100% + 12px); margin: 0 -6px 8px; padding: 2px 6px; border-radius: 0; }
+  .np .np-lyrics button:hover { color: var(--screen-ink); background: color-mix(in srgb, var(--screen-ink) 12%, transparent); }
+}
+.np-lyrics-msg { color: var(--screen-dim); }
+
+/* Two cards on Mac (themes/layouts/two-cards.css puts Now playing beside the library): the card's shape.
+   Lyrics 歌詞 key adds the lyrics column beside the player; ✕ in its header removes it. */
+@media (min-width: 900px) {
+  :root {
+    .np:not([open]) { padding: 0 6px 0 0; } /* room for the hard shadow */
+    .np:not([open]) .np-top { display: none; }
+    .np:not([open]) .np-card { max-width: none; margin: 0; align-content: center; }
+    .np:not([open]):not(.lyrics) .np-main { width: 100%; max-width: 460px; justify-self: center; }
+    .np:not([open]).lyrics .np-card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .np:not([open]).lyrics .np-main { display: grid; }
+    .np:not([open]).lyrics .np-art { display: block; }
+    .np:not([open]).lyrics .np-ly { order: 0; flex: none; height: 0; min-height: 100%; }
+  }
+  /* Full library (themes/layouts/full-library.css places it): the device card as a bar, the screen shows title, artist, times */
+  :root[data-view="full"] {
+    .np:not([open]) .np-card { padding: 12px 20px; }
+    .np:not([open]) .np-art { border-radius: 12px; box-shadow: 3px 4px 0 var(--shadow); }
+    .np:not([open]) .np-meta { gap: 2px; padding: 8px 12px; }
+    .np:not([open]) .np-meta .title { font-size: 1.05rem; }
+    .np:not([open]) .np-meta .artist { font-size: 13px; }
+    .np:not([open]) .s-time { font-size: .75rem; }
+    .np:not([open]) .np-controls .np-play { min-width: 60px; height: 52px; }
+  }
+}

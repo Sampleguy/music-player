@@ -1,0 +1,30 @@
+/* Olive: dark moss background, lime accent. Colors only. Same names in every file in colors/. Shapes and fonts are in looks/.
+   Classic uses bg..backdrop; Retro also uses ink..screen-dot (outlines, keys, LCD screens). */
+:root {
+  --bg: #14170e;
+  --dot: #30361f;
+  --surface: #222717;
+  --bar: #1a1e12;
+  --text: #eef0e4;
+  --text-dim: #aeb397;
+  --border: #30361f;
+  --accent: #b5c95a;
+  --accent-text: #b5c95a;
+  --on-accent: #14170e;
+  --error: #ff8a80;
+  --backdrop: rgba(0, 0, 0, 0.6);
+  --ink: #616552;
+  --shadow: #616552;
+  --sink: rgba(0, 0, 0, 0.5);
+  --hi: rgba(255, 255, 255, 0.14);
+  --key: #33352c;
+  --key-2: #25281f;
+  --key-ink: #eef0e4;
+  --play: #b5c95a;
+  --play-ink: #14170e;
+  --screen: #1e2a16;
+  --screen-ink: #d4ecaa;
+  --screen-dim: #a1ba7c;
+  --screen-dot: #d4ecaa14;
+  color-scheme: dark;
+}

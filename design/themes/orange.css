@@ -1,0 +1,31 @@
+/* Orange: warm shell, orange play key and accents. */
+:root {
+  --page: #FFE8D1;
+  --page-dot: #F7D6B4;
+  --shell: #FFF6EC;
+  --shell-ink: #231F20;
+  --dim: #7A5E4C;
+  --ink: #231F20;
+  --shadow: #231F20;
+  --sink: rgba(35, 31, 32, 0.16);
+  --lcd: #F4F1EA;
+  --lcd-ink: #231F20;
+  --lcd-dim: #7A6A5A;
+  --lcd-dot: rgba(35, 31, 32, 0.07);
+  --key: #FFFFFF;
+  --key-2: #FFE1C2;
+  --key-ink: #231F20;
+  --play: #FF8A3D;
+  --play-ink: #231F20;
+  --accent: #F26B1D;
+  --accent-ink: #231F20;
+  --hi: rgba(255, 255, 255, 0.6);
+  --font: "M PLUS Rounded 1c", ui-rounded, system-ui, sans-serif;
+  --font-lcd: "DotGothic16", ui-monospace, monospace;
+  --font-logo: "Dela Gothic One", "M PLUS Rounded 1c", system-ui, sans-serif;
+  --line: 2.5px;
+  --radius: 24px;
+  --key-r: 12px;
+  --space: 16px;
+  color-scheme: light;
+}

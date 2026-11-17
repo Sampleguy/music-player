@@ -1,0 +1,31 @@
+/* Dark: same hardware at night, backlit green LCD. */
+:root {
+  --page: #242021;
+  --page-dot: #2F2A2B;
+  --shell: #363132;
+  --shell-ink: #F3EDE4;
+  --dim: #ACA39C;
+  --ink: #0D0B0C;
+  --shadow: #000000;
+  --sink: rgba(0, 0, 0, 0.5);
+  --lcd: #1E2A20;
+  --lcd-ink: #BFE8AE;
+  --lcd-dim: #82A877;
+  --lcd-dot: rgba(191, 232, 174, 0.08);
+  --key: #4E4848;
+  --key-2: #433D3E;
+  --key-ink: #F3EDE4;
+  --play: #F6D365;
+  --play-ink: #231F20;
+  --accent: #F4A28C;
+  --accent-ink: #231F20;
+  --hi: rgba(255, 255, 255, 0.14);
+  --font: "M PLUS Rounded 1c", ui-rounded, system-ui, sans-serif;
+  --font-lcd: "DotGothic16", ui-monospace, monospace;
+  --font-logo: "Dela Gothic One", "M PLUS Rounded 1c", system-ui, sans-serif;
+  --line: 2.5px;
+  --radius: 24px;
+  --key-r: 12px;
+  --space: 16px;
+  color-scheme: dark;
+}

@@ -1,0 +1,31 @@
+/* Classic: the first look (flat, Spotify-like). Shapes and fonts only; colors come from colors/.
+   Always loaded; another look file loads on top of it. */
+@import "classic-now-playing.css";
+:root {
+  --font: -apple-system, system-ui, sans-serif;
+  --font-lcd: var(--font);
+  --space: 16px;
+  --radius: 8px;
+  --cover: 48px;
+  --player-h: 120px;
+}
+/* Icons (B-25): solid set, smooth edges. Pixel set hidden (retro.css shows it back). */
+.ic .px { display: none; }
+.ic .so { shape-rendering: geometricPrecision; }
+
+/* Phone, every look (B-40): the four top keys (playlists / recent / theme / import) sit in one fixed spot,
+   so switching looks never moves them. Looks keep their own colors and shapes for the keys. */
+@media (max-width: 899px) {
+  :root .brand-keys { position: absolute; top: calc(env(safe-area-inset-top) + 8px); right: 16px; display: flex; gap: 8px; margin: 0; }
+  :root .brand-keys .key { box-sizing: border-box; width: 40px; min-width: 40px; height: 40px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+  :root .brand-keys .key .ic { display: inline-block; }
+  :root .brand-keys .key::before { content: none; }
+  :root .brand { min-height: 40px; padding-top: 8px; }
+}
+
+/* Classic (B-48): the Library bar shows only its keys (Grid / List, lyrics filter; Full library on Mac), right under the clock */
+:root:not(:has(#look[href])) {
+  .home-top { display: flex; flex-direction: column; }
+  .bar { display: flex; align-items: center; gap: 8px; order: 1; padding: 0 var(--space) 4px; }
+  .bar > :not(.lib-tools) { display: none; }
+}

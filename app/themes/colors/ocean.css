@@ -1,0 +1,30 @@
+/* Ocean: deep blue background, teal accent. Colors only. Same names in every file in colors/. Shapes and fonts are in looks/.
+   Classic uses bg..backdrop; Retro also uses ink..screen-dot (outlines, keys, LCD screens). */
+:root {
+  --bg: #0b1e2d;
+  --dot: #21405c;
+  --surface: #14304a;
+  --bar: #0f2638;
+  --text: #e8f1f8;
+  --text-dim: #9db5ca;
+  --border: #21405c;
+  --accent: #2ec4b6;
+  --accent-text: #2ec4b6;
+  --on-accent: #04201d;
+  --error: #ff8a80;
+  --backdrop: rgba(0, 0, 0, 0.6);
+  --ink: #546a7c;
+  --shadow: #546a7c;
+  --sink: rgba(0, 0, 0, 0.5);
+  --hi: rgba(255, 255, 255, 0.14);
+  --key: #2a3c49;
+  --key-2: #1d2f3d;
+  --key-ink: #e8f1f8;
+  --play: #2ec4b6;
+  --play-ink: #04201d;
+  --screen: #0a2a33;
+  --screen-ink: #a8f0e6;
+  --screen-dim: #72c2b8;
+  --screen-dot: #a8f0e614;
+  color-scheme: dark;
+}

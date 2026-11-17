@@ -1,0 +1,185 @@
+/* Retro: the approved B-20 look, ported from design/sample.css onto the app's shared markup.
+   Shapes, fonts and motion only: every color is a variable from colors/ (default paint: cream).
+   Now playing pop-up is in retro-now-playing.css. Loads on top of classic.css. */
+@import "retro-now-playing.css";
+
+/* Fonts: saved once from Google Fonts into app/fonts/ (latin + the Japanese the app shows), SIL OFL. Nothing loads from outside. */
+@font-face { font-family: "M PLUS Rounded 1c"; font-weight: 400; font-display: swap; src: url(/fonts/rounded-400.woff2) format("woff2"); }
+@font-face { font-family: "M PLUS Rounded 1c"; font-weight: 700; font-display: swap; src: url(/fonts/rounded-700.woff2) format("woff2"); }
+@font-face { font-family: "M PLUS Rounded 1c"; font-weight: 800; font-display: swap; src: url(/fonts/rounded-800.woff2) format("woff2"); }
+@font-face { font-family: "DotGothic16"; font-display: swap; src: url(/fonts/dotgothic.woff2) format("woff2"); }
+@font-face { font-family: "Dela Gothic One"; font-display: swap; src: url(/fonts/dela.woff2) format("woff2"); }
+
+:root {
+  --font: "M PLUS Rounded 1c", ui-rounded, system-ui, sans-serif;
+  --font-lcd: "DotGothic16", ui-monospace, monospace;
+  --font-logo: "Dela Gothic One", "M PLUS Rounded 1c", system-ui, sans-serif;
+  --line: 2.5px;
+  --radius: 24px;
+  --key-r: 12px;
+  --space: 16px;
+  --cover: 44px;
+  --player-h: 120px;
+  --card: 420px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--dot) 1.2px, transparent 1.4px);
+  background-size: 18px 18px;
+  color: var(--text);
+  font: 400 15px/1.45 var(--font);
+  padding: max(24px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) calc(var(--player-h) + 24px) max(16px, env(safe-area-inset-left));
+}
+.jp { font-family: var(--font-lcd); font-weight: 400; color: var(--text-dim); }
+
+/* Brand: logo B tile + word, like the sample header */
+.brand { display: flex; align-items: center; gap: 14px; max-width: var(--card); margin: 0 auto 24px; }
+.tile-lcd { width: 58px; height: 58px; flex: none; display: grid; place-items: center; font: 400 1.8rem var(--font-lcd); }
+.word { font-family: var(--font-logo); font-size: 2.1rem; line-height: 1; }
+.word small { display: block; margin-top: 6px; font: 400 .8rem var(--font-lcd); color: var(--text-dim); }
+
+/* Hardware parts */
+#app, dialog.sheet {
+  background: var(--bar); border: var(--line) solid var(--ink); border-radius: var(--radius); box-shadow: 4px 5px 0 var(--shadow);
+}
+#app { display: grid; gap: 12px; max-width: var(--card); margin: 0 auto; padding: var(--space); }
+.home-top, .home-list, .results { display: contents; }
+.lcd, .tile-lcd, #player .meta {
+  background-color: var(--screen);
+  background-image: radial-gradient(var(--screen-dot) 1px, transparent 1.2px);
+  background-size: 4px 4px;
+  color: var(--screen-ink); font-family: var(--font-lcd);
+  border: var(--line) solid var(--ink); border-radius: 14px;
+  box-shadow: inset 0 3px 6px var(--sink);
+}
+.tile-lcd { border-radius: 16px; box-shadow: inset 0 3px 6px var(--sink), 3px 4px 0 var(--shadow); }
+.key, #player .controls button, .sheet button, .modes button, .login button, .queue header button {
+  appearance: none; -webkit-appearance: none; font: inherit; font-weight: 700; font-size: .9rem;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-width: 48px; height: 48px; padding: 0 14px;
+  border-radius: var(--key-r); border: 2px solid var(--ink);
+  background: var(--key); color: var(--key-ink);
+  box-shadow: inset 0 2px 0 var(--hi), 0 3px 0 var(--ink);
+  cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  transition: transform .08s, box-shadow .08s, background-color .15s;
+}
+.key:active, #player .controls button:active, .sheet button:active, .modes button:active, .login button:active, .queue header button:active {
+  transform: translateY(2px); box-shadow: inset 0 2px 0 var(--hi), 0 1px 0 var(--ink);
+}
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.key.alt, #player .controls .next { background: var(--key-2); }
+#player .controls .toggle, .login button { background: var(--play); color: var(--play-ink); }
+.key.on, .key[aria-pressed="true"], .sheet button.on, .modes button.on { background: var(--accent); color: var(--on-accent); border-color: var(--ink); }
+.key .jp { color: inherit; opacity: .75; }
+.key.sm { min-width: 36px; width: 36px; height: 36px; padding: 0; border-radius: 10px; }
+.ic { width: 20px; height: 20px; }
+.ic .px { display: inline; } /* pixel icon set; the solid one is for Classic */
+.ic .so { display: none; }
+.key.sm .ic { width: 18px; height: 18px; }
+.cover { border: 2px solid var(--ink); border-radius: 9px; background: var(--key-2); }
+
+/* Library bar, clock screen, search, occasion chips */
+.bar { display: flex; align-items: baseline; gap: 8px; font-size: 1.25rem; white-space: nowrap; }
+.bar b { font-family: var(--font-logo); font-weight: 400; }
+.bar .count { margin-left: auto; font-size: .8rem; color: var(--text-dim); }
+.brand-keys { display: flex; gap: 8px; margin-left: auto; }
+.brand-keys .key { padding: 0; min-width: 40px; height: 40px; }
+@media (max-width: 430px) { /* 4 keys (B-33 Import) fit beside the logo on a phone */
+  .brand { gap: 10px; }
+  .tile-lcd { width: 46px; height: 46px; font-size: 1.5rem; }
+  .word { font-size: 1.8rem; }
+  .brand-keys { gap: 6px; }
+  .brand-keys .key { min-width: 34px; height: 34px; }
+}
+/* Phone (B-50): classic.css pins the 4 keys top right (184 px + 16 px edge). The brand spans the row and keeps
+   that space free, so the keys sit right of "Music", never on top. */
+@media (max-width: 899px) {
+  :root .brand { align-self: stretch; box-sizing: border-box; margin-left: 0; margin-right: 0; padding-right: 192px; }
+  .word { min-width: 0; }
+}
+@media (max-width: 400px) {
+  .brand { gap: 8px; }
+  .tile-lcd { width: 40px; height: 40px; font-size: 1.3rem; }
+  .word { font-size: 1.6rem; }
+  .word small { font-size: .7rem; }
+}
+.clock { padding: 10px 14px; }
+.c-time { font-size: 1.9rem; font-weight: 400; line-height: 1.1; }
+.c-date, .clock .romaji { color: var(--screen-dim); }
+.hello { font-size: 1rem; }
+.search {
+  margin: 0; padding: 8px 12px; background: var(--key); color: var(--text-dim);
+  border: 2px solid var(--ink); border-radius: 12px; box-shadow: inset 0 2px 3px var(--sink);
+}
+.search input { font-size: 16px; color: var(--key-ink); }
+.search:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
+.chips { padding: 2px 2px 6px; gap: 10px; }
+.chip { height: 40px; border-radius: 99px; font-size: .9rem; }
+
+/* Song rows */
+.tracks { display: grid; gap: 6px; padding: 4px 6px 8px 2px; }
+.track {
+  display: grid; grid-template-columns: var(--cover) minmax(0, 1fr) auto auto; gap: 10px;
+  padding: 7px; border: 2px solid transparent; border-radius: 14px; transition: transform .12s, background-color .15s;
+}
+.track:hover, .track:active { background: none; border-color: var(--ink); }
+.track:active { transform: scale(.98); }
+.track.playing { background: var(--key-2); border-color: var(--ink); box-shadow: 2px 3px 0 var(--shadow); }
+.track.playing .title { color: var(--text); }
+.track .meta { display: grid; }
+.track .title { font-weight: 700; }
+.track .artist { font-size: .82rem; }
+.track .t { display: inline; font: 400 .85rem var(--font-lcd); color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.row-btn.key { margin: 0; font-size: inherit; }
+.empty { padding: 12px; }
+
+/* Mini player: the sample's .mini, floating over the card */
+#player {
+  left: 50%; right: auto; bottom: calc(12px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  width: min(calc(var(--card) - 2 * var(--space) - 2 * var(--line)), calc(100% - 32px));
+  grid-template-columns: var(--cover) minmax(0, 1fr) auto auto; align-items: center; gap: 10px;
+  padding: 8px; background: var(--key-2); border: 2px solid var(--ink); border-radius: 18px; box-shadow: 3px 4px 0 var(--shadow);
+}
+#player .now, #player .controls { display: contents; }
+#player .meta { padding: 6px 10px; min-width: 0; border-radius: 10px; }
+#player .meta .title { font-size: 15px; }
+#player .meta .artist { font-size: .75rem; color: var(--screen-dim); }
+#player .controls :is(.prev, .queue-btn) { display: none; }
+#player .controls button { padding: 0; }
+#player .controls .ic { width: 20px; height: 20px; }
+#player .msg { grid-column: 1 / -1; }
+#player .seek .pos, #player .seek .dur { display: none; }
+#player .seek input {
+  -webkit-appearance: none; appearance: none; height: 10px; margin: 0; cursor: pointer;
+  border: 2px solid var(--ink); border-radius: 99px;
+  background: linear-gradient(var(--accent), var(--accent)) 0 0 / var(--p, 0%) 100% no-repeat, var(--key);
+}
+#player .seek input::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; opacity: 0; }
+
+/* Sheets and full-screen lists */
+dialog { color: var(--text); }
+dialog.sheet .title { font-family: var(--font-logo); font-weight: 400; }
+.sheet button { display: flex; width: 100%; margin-top: 10px; }
+.queue { background-color: var(--bg); background-image: radial-gradient(var(--dot) 1.2px, transparent 1.4px); background-size: 18px 18px; }
+.modes button { flex: 1; }
+
+/* Login: inside the same card */
+.login input { background: var(--key); color: var(--key-ink); border: 2px solid var(--ink); border-radius: 12px; box-shadow: inset 0 2px 3px var(--sink); }
+
+/* Two cards on Mac (themes/layouts/two-cards.css places the cards): Retro's sizes and shapes only. */
+@media (min-width: 900px) {
+  :root {
+    --lib-w: minmax(340px, 440px); --cards-gap: 36px; --page-max: 1400px;
+    #app .queue header { position: sticky; top: 0; z-index: 1; background: var(--bar); padding-bottom: 6px; }
+    #app .queue h2 { margin: 0; font-size: 1rem; }
+    #app .queue header button { height: 36px; min-width: 0; font-size: .8rem; }
+    #app .queue h3 { margin: 10px 2px 4px; }
+    .queue h2 .jp { display: inline; }
+    #app .view-key { height: 34px; padding: 0 12px; font-size: .8rem; }
+  }
+  /* Full library (themes/layouts/full-library.css places it): column titles on the card's paper */
+  :root[data-view="full"] #app .cols { background: var(--bar); font: 400 .8rem var(--font-lcd); }
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }

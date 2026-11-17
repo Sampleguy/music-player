@@ -1,0 +1,107 @@
+/* Terminal look: hacker command line. Monospace everywhere, square edges, 1 px lines, text buttons,
+   ASCII progress, lyrics as a log. Colors only through the color variables. */
+body { font: 400 14px/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+* { border-radius: 0 !important; }
+
+/* Boxes with the name cut into the top line */
+.panel { border: 1px solid var(--ink); padding: 18px 14px 14px; background: var(--bg); }
+.panel::before {
+  content: "─ " attr(data-title) " ─"; position: absolute; top: -.8em; left: 10px;
+  padding: 0 4px; background: var(--bg); color: var(--text-dim);
+}
+.lib { display: grid; gap: 10px; }
+
+.seg { border: 1px solid var(--ink); background: none; text-transform: lowercase; }
+.seg::before { content: "[ ] "; white-space: pre; color: var(--text-dim); }
+.seg[aria-pressed="true"]::before { content: "[x] "; color: var(--accent-text); }
+
+/* Prompt header */
+.prompt { display: block; color: var(--accent-text); }
+.prompt span { color: var(--text); }
+.prompt span::after { content: ""; display: inline-block; width: .6em; height: 1.1em; margin-left: .3em; vertical-align: -.2em; background: var(--text); animation: blink 1s step-end infinite; }
+.lib-head h1 { font-size: 1em; font-weight: 700; text-transform: lowercase; }
+.lib-head h1::before { content: "# "; color: var(--text-dim); }
+.count::before { content: "("; } .count::after { content: ")"; }
+
+.search { border: 1px solid var(--ink); padding: 0 8px; }
+.search::before { content: "grep -i"; color: var(--text-dim); }
+.search [data-i] { display: none; }
+.search input { height: 36px; }
+.chip { padding: 0 2px; color: var(--accent-text); text-transform: lowercase; }
+.chip::before { content: "--"; }
+.chip:hover, .chip:focus-visible { text-decoration: underline; }
+
+/* Rows: marker | [cover] | title / artist | time */
+.rows { border-top: 1px solid var(--ink); }
+.row { grid-template-columns: 2ch auto 1fr auto auto; gap: 8px; padding: 2px 0; }
+.row::before { content: ""; }
+.row.cur::before { content: ">"; color: var(--accent-text); font-weight: 700; }
+.row .cover, .mini .cover { background: none; text-shadow: none; color: var(--text-dim); }
+.row .cover::before, .mini .cover::before { content: "["; } .row .cover::after, .mini .cover::after { content: "]"; }
+.cover { display: inline-flex; }
+.cover.big { display: grid; }
+.info { grid-template-columns: minmax(0, 1fr) minmax(0, .8fr); gap: 8px; }
+.row.cur .title { color: var(--accent-text); font-weight: 700; }
+.row.cur .title::after {
+  content: ""; display: inline-block; width: .6em; height: 1.1em; margin-left: .4em; vertical-align: -.2em;
+  background: var(--accent-text); animation: blink 1s step-end infinite;
+}
+.row:hover, .row:focus-visible { background: var(--text); color: var(--bg); outline: 0; }
+.row:hover .meta, .row:hover .t, .row:hover .cover, .row:hover .title,
+.row:focus-visible .meta, .row:focus-visible .t, .row:focus-visible .cover, .row:focus-visible .title { color: var(--bg); }
+.row:hover .title::after, .row:focus-visible .title::after { background: var(--bg); }
+@media (max-width: 520px) { .info { grid-template-columns: 1fr; gap: 0; } }
+
+/* Text buttons: [prev] [pause] [next]; pixel icons only where no word fits */
+.ic .so { display: none; }
+.btn [data-i] { display: none; }
+.btn .tx::before { content: "["; color: var(--text-dim); } .btn .tx::after { content: "]"; color: var(--text-dim); }
+.btn { padding: 0 2px; min-width: 0; }
+.btn:hover .tx, .btn:focus-visible .tx { text-decoration: underline; }
+.btn[aria-pressed="true"] .tx { background: var(--accent); color: var(--on-accent); }
+.btn[aria-pressed="true"] .tx::before, .btn[aria-pressed="true"] .tx::after { color: var(--on-accent); }
+.btn.play .tx { color: var(--accent-text); font-weight: 700; }
+
+/* Mini player = status line */
+.mini { border-top: 1px solid var(--ink); padding-top: 8px; grid-template-columns: auto 1fr auto auto auto; gap: 8px; }
+.m-info { display: flex; gap: 8px; min-width: 0; }
+.m-title { flex: 0 1 auto; } .m-sub { flex: 0 1 auto; } .m-sub::before { content: "— "; }
+.m-prog { display: none; }
+.mini .ascii { color: var(--accent-text); }
+@media (max-width: 520px) { .mini .ascii { display: none; } .m-info { display: grid; gap: 0; } .m-sub::before { content: none; } }
+
+/* Now playing */
+.np { padding: 22px 18px 18px; }
+.np-main { justify-items: stretch; gap: 10px; }
+.np .cover.big {
+  justify-self: center; width: min(100%, 260px); border: 1px solid var(--ink); font-size: 5rem; color: var(--text);
+  background: radial-gradient(var(--dot) 1px, transparent 1.2px) 0 0 / 6px 6px, var(--bg); text-shadow: none;
+}
+.n-title::before { content: "title:  "; color: var(--text-dim); white-space: pre; }
+.n-artist::before { content: "artist: "; color: var(--text-dim); white-space: pre; }
+.n-title { font-weight: 700; }
+.seek-row .ascii { color: var(--accent-text); overflow: hidden; }
+.seek { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.seek-row:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.times { justify-content: flex-start; gap: 0; font-size: 1em; }
+.times span + span::before { content: " / "; white-space: pre; }
+.keys { justify-content: flex-start; gap: 4px 8px; }
+.keys.sub { border-top: 1px dashed var(--ink); padding-top: 6px; }
+
+/* Lyrics: a log that grows at the bottom */
+.lyrics { border-top: 1px solid var(--ink); padding-top: 6px; }
+@media (min-width: 1100px) { .lyrics { border-top: 0; border-left: 1px solid var(--ink); padding: 0 0 0 16px; } }
+.ly-name { font-size: 0; }
+.ly-name::before { content: "$ tail -f lyrics.log"; font-size: 14px; color: var(--accent-text); }
+.ly-lines { display: flex; flex-direction: column; }
+.ly-lines p { color: var(--text-dim); white-space: pre-wrap; }
+.ly-lines p:first-child { margin-top: auto; }
+.ly-lines p::before { content: attr(data-t) " "; color: var(--text-dim); }
+.ly-lines p.later { display: none; }
+.ly-lines p.now { color: var(--text); }
+.ly-lines p.now::after { content: ""; display: inline-block; width: .6em; height: 1.1em; margin-left: .3em; vertical-align: -.2em; background: var(--text); animation: blink 1s step-end infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+@media (max-width: 1099px) { .np.lyr-on .np-main > .cover.big { display: none; } }
+@media (min-width: 900px) { .stage { grid-template-columns: 480px 1fr; } }
+@media (min-width: 1100px) { .np { grid-template-columns: 340px 1fr; } }
+@media (max-width: 520px) { .np { padding-inline: 12px; } }

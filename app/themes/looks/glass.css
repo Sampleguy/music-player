@@ -1,0 +1,162 @@
+/* Glass: ported from the approved B-26 sample (design/looks-glass.css) onto the app's shared markup.
+   The playing cover, huge and blurred, fills the background; frosted see-through panels; big bold titles;
+   soft round corners; calm fade/slide motion. Shapes, fonts and motion only: every color is a variable
+   from colors/ (default paint: cream). Now playing is in glass-now-playing.css. Loads on top of classic.css. */
+@import "glass-now-playing.css";
+
+:root {
+  --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius: 14px;
+  --space: 20px;
+  --cover: 48px;
+  --player-h: 96px;
+  --card: 440px;
+  /* frosted panel paint, used here and in glass-now-playing.css */
+  --glass: color-mix(in srgb, var(--surface) 76%, transparent); /* 76%: lowest that keeps AA over any cover */
+  --glass-line: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
+  --sheen: linear-gradient(160deg, color-mix(in srgb, var(--text) 9%, transparent), transparent 45%); /* light catching the glass edge */
+  --pane-blur: blur(30px) saturate(1.8);
+  --soft: color-mix(in srgb, var(--bg) 60%, transparent);
+  --wash: color-mix(in srgb, var(--bg) 60%, transparent);
+}
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  isolation: isolate; /* keeps body::before (z-index -1) behind the content */
+  font: 400 16px/1.4 var(--font);
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) calc(var(--player-h) + 24px) max(16px, env(safe-area-inset-left));
+}
+
+/* Blurred cover behind everything (--art = playing cover, set by the mini player), then a wash of the page
+   color so text keeps its contrast. One fixed layer, drawn once: scrolling never redraws the blur. */
+body::before {
+  content: ""; position: fixed; inset: -100px; z-index: -1; pointer-events: none;
+  background: linear-gradient(var(--wash), var(--wash)), var(--art, none) center / cover no-repeat, var(--bg);
+  filter: blur(70px) saturate(1.6); transform: translateZ(0);
+  transition: background-image .7s ease;
+}
+
+/* Top row: only the small keys (playlists / recent / theme) as frosted round buttons */
+.brand { display: flex; justify-content: flex-end; max-width: var(--card); margin: 0 auto 12px; }
+.brand .tile-lcd, .brand .word { display: none; }
+.brand-keys { display: flex; gap: 8px; }
+.brand-keys .key {
+  display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; border: var(--glass-line); border-radius: 999px;
+  background: var(--glass); color: var(--text); cursor: pointer;
+  -webkit-backdrop-filter: blur(20px) saturate(1.6); backdrop-filter: blur(20px) saturate(1.6);
+  transition: transform .2s;
+}
+.brand-keys .key:active { transform: scale(.92); }
+.ic { width: 22px; height: 22px; }
+
+/* Frosted library panel. No backdrop blur here: the page behind it is already blurred, and a big
+   blurred panel would make iPhone scrolling lag. */
+#app, dialog.sheet { background: var(--sheen), var(--glass); border: var(--glass-line); border-radius: 28px; box-shadow: 0 24px 60px var(--sink); }
+#app { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; max-width: var(--card); margin: 0 auto; padding: var(--space); animation: rise .5s cubic-bezier(.2, .8, .2, 1); }
+.home-top, .home-list, .results { display: contents; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Big bold title + count, clock and greeting kept small under it */
+.bar { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.bar b { font-size: 2.2rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+.bar .count { font-size: .9rem; color: var(--text-dim); }
+.bar .jp { display: none; }
+.clock { padding: 0; }
+.c-row { gap: 8px; }
+.c-time { font-size: .95rem; font-weight: 600; }
+.c-date, .hello { font-size: .95rem; color: var(--text-dim); }
+.hello { margin: 0; }
+.romaji { font-size: .8rem; opacity: .75; }
+
+.search { margin: 0; padding: 0 14px; height: 44px; border-radius: 14px; background: var(--soft); }
+.search input { font-size: 16px; }
+.search:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chips { padding: 0; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  min-height: 36px; padding: 0 16px; border: 0; border-radius: 999px; font-weight: 600; font-size: .9rem;
+  background: var(--soft); transition: background-color .2s, transform .2s;
+}
+.chip:active { transform: scale(.96); }
+
+/* Song rows: clean, soft highlight */
+.tracks { padding: 0; }
+.track { gap: 12px; padding: 8px; border-radius: 14px; transition: background-color .25s; }
+.track .meta { flex: 1; }
+.track:hover, .track:active { background: color-mix(in srgb, var(--text) 6%, transparent); }
+.track .cover { border-radius: 10px; }
+.track .title { font-weight: 600; }
+.track.playing { background: color-mix(in srgb, var(--text) 9%, transparent); }
+.track.playing .title { font-weight: 700; color: var(--text); }
+.track .artist { font-size: .85rem; }
+.track .t { display: inline; font-size: .85rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.row-btn { border-radius: 999px; padding: 0; width: 36px; height: 36px; display: inline-grid; place-items: center; }
+.row-btn .ic { width: 18px; height: 18px; }
+.empty { padding: 16px 0; }
+
+/* Mini player: floating frosted capsule (cover, title, play, next), thin progress line along the bottom */
+#player {
+  left: 50%; right: auto; bottom: calc(12px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  width: min(calc(var(--card) - 2 * var(--space)), calc(100% - 32px));
+  grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0 10px;
+  padding: 8px 10px 11px; overflow: hidden; border: var(--glass-line); border-radius: 20px;
+  background: var(--glass); box-shadow: 0 10px 30px var(--sink);
+  -webkit-backdrop-filter: blur(28px) saturate(1.6); backdrop-filter: blur(28px) saturate(1.6);
+}
+#player .now { gap: 10px; }
+#player .cover { width: 44px; height: 44px; border-radius: 10px; }
+#player .title { font-weight: 600; }
+#player .artist { font-size: .85rem; }
+#player .controls { display: flex; gap: 4px; }
+#player .controls :is(.prev, .queue-btn) { display: none; }
+#player .controls button { display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; border-radius: 999px; transition: transform .2s; }
+#player .controls button:active { transform: scale(.92); }
+#player .controls .toggle { background: var(--text); color: var(--bg); } /* white (or dark) glass disc, not a flat color */
+#player .controls .ic { width: 22px; height: 22px; }
+/* the seek bar becomes a 3 px line along the bottom edge (still a range input, so it still seeks) */
+#player .seek { position: absolute; left: 0; right: 0; bottom: 0; }
+#player .seek .pos, #player .seek .dur { display: none; }
+#player .seek input {
+  -webkit-appearance: none; appearance: none; height: 3px; margin: 0; cursor: pointer;
+  background: linear-gradient(var(--text), var(--text)) 0 0 / var(--p, 0%) 100% no-repeat, color-mix(in srgb, var(--text) 12%, transparent);
+}
+#player .seek input::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; opacity: 0; }
+#player .seek input::-moz-range-thumb { width: 12px; height: 12px; opacity: 0; }
+
+/* Sheets and full-screen lists */
+dialog { color: var(--text); }
+dialog.sheet { padding: var(--space); }
+dialog.sheet .title { font-size: 1.3rem; font-weight: 800; letter-spacing: -.01em; }
+.sheet button { border-radius: 999px; font-weight: 600; background: var(--soft); transition: background-color .25s, color .25s; }
+.sheet button.on { background: var(--text); color: var(--bg); }
+.queue { background: var(--bg); }
+.modes button { border-radius: 999px; }
+.modes button.on { background: var(--text); color: var(--bg); border-color: var(--text); }
+dialog[open] { animation: rise .4s cubic-bezier(.2, .8, .2, 1); }
+dialog::backdrop { -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.login button { border-radius: 999px; }
+.login input { border-radius: 14px; }
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } }
+
+/* Two cards on Mac (themes/layouts/two-cards.css places the panels): Glass's sizes and shapes only. */
+@media (min-width: 900px) {
+  :root {
+    --lib-w: 380px; --cards-gap: 20px; --page-max: 1240px;
+    .brand { margin-bottom: 16px; }
+    #app { -webkit-backdrop-filter: var(--pane-blur); backdrop-filter: var(--pane-blur); } /* only here: the page never scrolls */
+    #app .queue header { padding: 0; }
+    #app .queue h2 { margin: 0; font-size: 1.3rem; font-weight: 800; }
+    #app .queue h3 { margin: 10px 0 4px; }
+    .bar .count { margin-left: auto; }
+    #app .view-key {
+      align-self: center; height: 34px; padding: 0 14px; border: 0; border-radius: 999px; font: inherit; font-size: .85rem; font-weight: 600;
+      background: color-mix(in srgb, var(--text) 8%, transparent); color: var(--text); transition: background-color .2s;
+    }
+    #app .view-key:hover { background: color-mix(in srgb, var(--text) 14%, transparent); }
+  }
+  /* Full library: column titles frosted over the rows scrolling under them */
+  :root[data-view="full"] #app .cols {
+    border-radius: 14px; background: color-mix(in srgb, var(--bg) 70%, transparent); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

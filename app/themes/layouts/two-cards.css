@@ -1,0 +1,34 @@
+/* Two cards (B-29, B-36): the Mac layout (≥ 900 px), shared by every look.
+   Library card left, Now playing always open right (the closed dialog shown in the page, no pop-up), mini player hidden.
+   The page never scrolls: both cards fill the window height, only the song list / queue and lyrics scroll inside.
+   Placement only. A look sets the sizes (--lib-w, --cards-gap, --page-max) and paints the cards' shapes.
+   Phones and narrow windows use the base layout (one list + mini player + Now playing pop-up).
+   Full library view (layouts/full-library.css) changes this on top. */
+@media (min-width: 900px) {
+  :root {
+    body {
+      display: grid; grid-template-columns: var(--lib-w, 380px) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr);
+      column-gap: var(--cards-gap, 24px); height: 100dvh; overflow: hidden; max-width: var(--page-max, 1320px); margin: 0 auto; padding-bottom: 24px;
+    }
+    .brand { grid-column: 1 / -1; max-width: none; margin-left: 0; margin-right: 0; }
+    #app { grid-area: 2 / 1; max-width: none; margin: 0; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+    #app .home-list { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; } /* Classic: pass the height down (Glass/Retro flatten it) */
+    #app .results, #app .queue[open] { display: block; flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+    #app .tracks { padding-bottom: 8px; }
+    #player { display: none; }
+
+    /* Queue takes the song list's place inside the Library card (pages/queue.js reads --inline); Back returns. */
+    .queue { --inline: 1; }
+    #app .queue[open] { position: static; inset: auto; width: auto; height: auto; max-height: none; margin: 0; padding: 0; border: 0; background: none; color: var(--text); animation: none; }
+    #app:has(.queue[open]) .results { display: none; }
+    &:not([data-view="full"]) #app .queue .modes { display: none; } /* Two cards: shuffle + repeat are on the Now playing card */
+    .q-done { display: none; } .q-back { display: inline; }
+
+    /* Now playing: the closed dialog sits in the page as the right card */
+    .np:not([open]) {
+      display: block; grid-area: 2 / 2; position: static; inset: auto; transform: none;
+      width: auto; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: none; overflow: visible;
+    }
+    .np:not([open]) .np-card { height: 100%; overflow-y: auto; } /* a too-short window scrolls inside the card, never the page */
+  }
+}

@@ -1,0 +1,30 @@
+/* Purple: dark plum background, violet accent. Colors only. Same names in every file in colors/. Shapes and fonts are in looks/.
+   Classic uses bg..backdrop; Retro also uses ink..screen-dot (outlines, keys, LCD screens). */
+:root {
+  --bg: #17111f;
+  --dot: #34284a;
+  --surface: #251b33;
+  --bar: #1d1527;
+  --text: #f1ecf8;
+  --text-dim: #b3a5c8;
+  --border: #34284a;
+  --accent: #b388ff;
+  --accent-text: #b388ff;
+  --on-accent: #17111f;
+  --error: #ff8a80;
+  --backdrop: rgba(0, 0, 0, 0.6);
+  --ink: #655b74;
+  --shadow: #655b74;
+  --sink: rgba(0, 0, 0, 0.5);
+  --hi: rgba(255, 255, 255, 0.14);
+  --key: #36303d;
+  --key-2: #282330;
+  --key-ink: #f1ecf8;
+  --play: #b388ff;
+  --play-ink: #17111f;
+  --screen: #221a33;
+  --screen-ink: #dccbff;
+  --screen-dim: #a896cc;
+  --screen-dot: #dccbff14;
+  color-scheme: dark;
+}

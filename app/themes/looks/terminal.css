@@ -1,0 +1,176 @@
+/* Terminal: ported from the approved B-26 sample (design/looks-terminal.css) onto the app's shared markup.
+   Hacker command line: monospace everywhere, square edges, 1 px lines, text keys in [brackets],
+   a blinking cursor, lyrics as a log. Shapes, fonts and motion only: every color is a variable
+   from colors/ (default paint: black). Now playing is in terminal-now-playing.css. Loads on top of classic.css. */
+@import "terminal-now-playing.css";
+
+:root {
+  --font: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --radius: 0;
+  --space: 14px;
+  --cover: 32px;
+  --player-h: 84px;
+  --card: 560px;
+}
+*, *::before, *::after { box-sizing: border-box; border-radius: 0 !important; }
+body {
+  font: 400 14px/1.5 var(--font);
+  padding: max(14px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) calc(var(--player-h) + 16px) max(12px, env(safe-area-inset-left));
+}
+button, input { font-family: var(--font); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Top row: a prompt with a blinking cursor, then the small keys as text */
+.brand { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; max-width: var(--card); margin: 0 auto 18px; }
+.brand .tile-lcd, .brand .word { display: none; }
+.brand::before { content: "~/music $ ls songs"; color: var(--accent-text); }
+.brand::after {
+  content: ""; order: 1; align-self: center; width: .6em; height: 1.1em; margin-left: -6px;
+  background: var(--text); animation: blink 1s step-end infinite;
+}
+.brand-keys { order: 2; display: flex; gap: 2px 8px; margin-left: auto; }
+/* Phone (B-50): classic.css pins the 4 keys top right (184 px + 16 px edge); the prompt keeps that space free */
+@media (max-width: 899px) {
+  :root .brand { align-self: stretch; box-sizing: border-box; margin-left: 0; margin-right: 0; padding-right: 192px; align-items: center; flex-wrap: nowrap; }
+  .brand::before { white-space: nowrap; font-size: 13px; }
+}
+.brand-keys .key { padding: 4px 0; border: 0; background: none; color: var(--text); cursor: pointer; font-size: 14px; }
+.brand-keys .key .ic { display: none; }
+.brand-keys .key::before { white-space: nowrap; }
+.brand-keys [data-open=pl]::before { content: "[lists]"; }
+.brand-keys [data-open=recent]::before { content: "[recent]"; }
+.brand-keys [data-open=theme]::before { content: "[theme]"; }
+.brand-keys [data-open=import]::before { content: "[import]"; }
+.brand-keys .key:hover::before, .brand-keys .key:focus-visible::before { text-decoration: underline; }
+
+/* Library box: the name cut into the top line */
+#app, .np-card { position: relative; border: 1px solid var(--ink); background: var(--bg); }
+#app::before, .np-card::before {
+  position: absolute; top: -.8em; left: 10px; z-index: 2; padding: 0 4px; background: var(--bg); color: var(--text-dim);
+}
+#app::before { content: "─ library ─"; }
+#app { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; max-width: var(--card); margin: 0 auto; padding: 18px 14px 10px; }
+.home-top, .home-list, .results { display: contents; }
+
+/* "# library (120 songs)"; clock + greeting as one dim line */
+.bar { display: flex; align-items: baseline; gap: 8px; }
+.bar b { font-weight: 700; text-transform: lowercase; }
+.bar b::before { content: "# "; color: var(--text-dim); }
+.bar .jp { display: none; }
+.bar .count { color: var(--text-dim); }
+.bar .count::before { content: "("; } .bar .count::after { content: ")"; }
+.clock { display: flex; flex-wrap: wrap; gap: 0 12px; padding: 0; color: var(--text-dim); }
+.c-row { display: flex; gap: 8px; }
+.c-time, .c-date, .hello, .romaji { margin: 0; font-size: 1em; font-weight: 400; color: var(--text-dim); }
+.romaji::before { content: "("; } .romaji::after { content: ")"; }
+
+/* Search: grep prompt; chips as --flags */
+.search { margin: 0; padding: 0 8px; height: 38px; border: 1px solid var(--ink); background: none; gap: 8px; }
+.search .ic { display: none; }
+.search::before { content: "grep -i"; color: var(--text-dim); white-space: nowrap; }
+.search input { font-size: 16px; } /* 16 px: iPhone does not zoom in */
+.search:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chips { padding: 0; gap: 4px 14px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { min-height: 32px; padding: 0 2px; border: 0; background: none; color: var(--accent-text); font-size: 14px; text-transform: lowercase; }
+.chip::before { content: "--"; }
+.chip:hover, .chip:focus-visible { text-decoration: underline; }
+.chip.on, .chip[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+
+/* Rows: marker | cover | title / artist | time | [...]. Hover = inverted line. */
+.tracks { padding: 0; border-top: 1px solid var(--ink); }
+.track { gap: 8px; padding: 3px 4px; }
+.track::before { content: ""; flex: none; width: 1ch; color: var(--accent-text); font-weight: 700; }
+.track.playing::before { content: ">"; }
+.track .cover { width: var(--cover); height: var(--cover); border: 1px solid var(--ink); background: var(--surface); object-fit: cover; }
+.track .meta { flex: 1; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .8fr); gap: 8px; }
+.track .title, .track .artist { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; }
+.track .artist { color: var(--text-dim); }
+.track.playing .title { color: var(--accent-text); font-weight: 700; }
+.track.playing .title::after {
+  content: ""; display: inline-block; width: .6em; height: 1.1em; margin-left: .4em; vertical-align: -.2em;
+  background: var(--accent-text); animation: blink 1s step-end infinite;
+}
+.track .t { display: inline; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.track:hover, .track:active { background: var(--text); color: var(--bg); }
+.track:hover :is(.title, .artist, .album, .t), .track:hover::before, .track:hover .row-btn { color: var(--bg); }
+.track:hover .title::after { background: var(--bg); }
+.row-btn { padding: 4px 0; border: 0; background: none; color: var(--text); font-size: 14px; cursor: pointer; }
+.row-btn .ic { display: none; }
+.row-btn::before { content: "[...]"; }
+.row-btn[data-act=remove]::before, .row-btn[aria-label=Remove]::before { content: "[rm]"; }
+@media (max-width: 520px) {
+  .track .meta { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .track .t { display: none; }
+}
+.empty { padding: 12px 0; color: var(--text-dim); }
+
+/* Mini player (phone) = status line: cover | title — artist | [play] [next], ASCII-like seek line on top */
+#player {
+  left: 0; right: 0; bottom: 0; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0 10px;
+  padding: 10px max(12px, env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  border-top: 1px solid var(--ink); background: var(--bg);
+}
+#player .now { gap: 8px; }
+#player .cover { width: 36px; height: 36px; border: 1px solid var(--ink); object-fit: cover; }
+#player .meta { min-width: 0; }
+#player .title, #player .artist { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#player .artist { color: var(--text-dim); }
+#player .artist:not(:empty)::before { content: "— "; }
+#player .controls { display: flex; gap: 8px; }
+#player .controls :is(.prev, .queue-btn) { display: none; }
+#player .controls button { padding: 6px 0; font-size: 14px; color: var(--text); }
+#player .controls .ic { display: none; }
+#player .controls button::before { content: "[" attr(aria-label) "]"; text-transform: lowercase; }
+#player .controls .toggle { color: var(--accent-text); font-weight: 700; }
+#player .seek { order: -1; grid-column: 1 / -1; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; color: var(--text-dim); font-size: 12px; }
+#player .seek input, .np-info input {
+  -webkit-appearance: none; appearance: none; height: 20px; margin: 0; cursor: pointer;
+  /* played part = accent dashes, rest = dim dashes: an ASCII bar [=====-----] drawn with CSS */
+  background:
+    repeating-linear-gradient(90deg, var(--accent-text) 0 6px, transparent 6px 9px) 0 50% / var(--p, 0%) 4px no-repeat,
+    repeating-linear-gradient(90deg, var(--ink) 0 6px, transparent 6px 9px) 0 50% / 100% 2px no-repeat;
+}
+:is(#player .seek, .np-info) input::-webkit-slider-thumb { -webkit-appearance: none; width: 8px; height: 16px; background: var(--text); }
+:is(#player .seek, .np-info) input::-moz-range-thumb { width: 8px; height: 16px; border: 0; background: var(--text); }
+
+/* Sheets and full-screen lists: square boxes, text keys */
+dialog { color: var(--text); background: var(--bg); border: 1px solid var(--ink); }
+dialog.sheet .title { font-weight: 700; text-transform: lowercase; }
+dialog.sheet .title::before { content: "# "; color: var(--text-dim); }
+.sheet button { border: 1px solid var(--ink); background: none; text-align: left; text-transform: lowercase; }
+.sheet button::before { content: "[ ] "; white-space: pre; color: var(--text-dim); }
+.sheet button.on { background: none; color: var(--accent-text); font-weight: 700; }
+.sheet button.on::before { content: "[x] "; color: var(--accent-text); }
+.sheet button:hover { background: var(--surface); }
+.queue { background: var(--bg); }
+.modes button { border: 1px solid var(--ink); background: none; }
+.modes button.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.login input { border: 1px solid var(--ink); }
+
+/* Two cards on Mac (themes/layouts/two-cards.css places the panels): Terminal's sizes and lines only. */
+@media (min-width: 900px) {
+  :root {
+    --lib-w: 480px; --cards-gap: 20px; --page-max: 1320px;
+    .brand { margin-bottom: 18px; }
+    #app { overflow: visible; } /* shows the box name on the top line; the song list still scrolls inside */
+    #app .queue header { padding: 0; }
+    #app .queue h2 { margin: 0; font-size: 1em; text-transform: lowercase; }
+    #app .queue h2::before { content: "# "; color: var(--text-dim); }
+    #app .queue h3 { margin: 10px 0 4px; font-size: 1em; color: var(--text-dim); }
+    .bar .count { margin-right: auto; }
+    #app .view-key { padding: 0; border: 0; background: none; color: var(--accent-text); font-size: 14px; text-transform: lowercase; }
+    #app .view-key::before { content: "["; } #app .view-key::after { content: "]"; }
+    #app .view-key:hover { text-decoration: underline; }
+  }
+  /* Full library: column titles as a header line, rows inverted on hover */
+  :root[data-view="full"] {
+    #app .cols { padding: 4px 4px 4px 0; border-bottom: 1px solid var(--ink); background: var(--bg); font-size: 14px; font-weight: 700; text-transform: lowercase; }
+    #app .track { padding: 3px 4px 3px 0; }
+    #app .track::before { display: none; } /* the > marker has no column here; the title cursor shows the playing song */
+    #app .track:hover :is(.artist, .album, .t) { color: var(--bg); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

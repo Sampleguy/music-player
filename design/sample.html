@@ -1,0 +1,92 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Music Design Sample</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Dela+Gothic+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap">
+<link id="theme" rel="stylesheet" href="themes/cream.css">
+<link rel="stylesheet" href="sample.css">
+<script>
+  try { var t = localStorage.getItem('sample-theme'); if (['cream', 'dark', 'orange'].indexOf(t) > -1) document.getElementById('theme').href = 'themes/' + t + '.css'; } catch (e) {}
+</script>
+
+<main class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="app-icon" data-swirl></span>
+      <div class="word">Music<small>おんがく · 音楽</small></div>
+    </div>
+    <div class="picker" role="group" aria-label="Color version">
+      <button class="key" data-th="cream">Cream <span class="jp">クリーム</span></button>
+      <button class="key" data-th="dark">Dark <span class="jp">ダーク</span></button>
+      <button class="key" data-th="orange">Orange <span class="jp">オレンジ</span></button>
+    </div>
+  </header>
+  <p class="intro">Design sample for card B-20. Fake songs, nothing real. Tap the keys, the rows, the seek bar and Lyrics. Switch colors at the top.</p>
+
+  <section class="stage">
+    <div>
+      <h2 class="label">Song list <span class="jp">曲リスト</span></h2>
+      <div class="shell phone">
+        <div class="bar"><b>Library</b><span class="jp">ライブラリ</span><span class="count">6 songs</span></div>
+        <label class="search"><span data-i="search"></span><input id="q" type="search" placeholder="Search songs" aria-label="Search songs" autocomplete="off"></label>
+        <ul class="rows" id="rows"></ul>
+        <div class="mini">
+          <span class="cover" id="m-cover"></span>
+          <div class="lcd m-lcd"><div class="m-title" id="m-title"></div><div class="m-sub" id="m-artist"></div></div>
+          <button class="key play" data-act="play" aria-label="Play"><span data-i="play"></span></button>
+          <button class="key alt" data-act="next" aria-label="Next"><span data-i="next"></span></button>
+          <div class="m-prog"><i id="m-fill"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="np-wrap">
+      <h2 class="label">Now playing <span class="jp">再生中</span></h2>
+      <div class="shell np" id="np">
+        <div class="np-main">
+          <div class="np-head"><span class="tag">再生中 · now playing</span><span data-swirl></span></div>
+          <span class="cover big" id="n-cover"></span>
+          <div class="lcd screen">
+            <div class="s-title" id="n-title"></div>
+            <div class="s-artist" id="n-artist"></div>
+            <div class="lvl" id="lvl"></div>
+            <div class="s-time"><span id="n-pos">0:00</span><span id="n-dur">0:00</span></div>
+          </div>
+          <input type="range" class="seek" id="seek" min="0" max="100" value="0" aria-label="Seek">
+          <div class="keys">
+            <button class="key alt" data-act="shuffle" aria-pressed="false" aria-label="Shuffle"><span data-i="shuffle"></span></button>
+            <button class="key" data-act="prev" aria-label="Previous"><span data-i="prev"></span></button>
+            <button class="key play big" data-act="play" aria-label="Play"><span data-i="play"></span></button>
+            <button class="key" data-act="next" aria-label="Next"><span data-i="next"></span></button>
+            <button class="key alt" data-act="repeat" aria-pressed="false" aria-label="Repeat"><span data-i="repeat"></span></button>
+          </div>
+          <div class="keys">
+            <button class="key alt" data-act="lyrics" id="ly-key" aria-pressed="false"><span data-i="lyrics"></span>Lyrics <span class="jp">歌詞</span></button>
+            <button class="key alt" data-act="queue"><span data-i="queue"></span>Queue <span class="jp">次</span></button>
+          </div>
+        </div>
+        <aside class="lcd lyrics" aria-label="Lyrics">
+          <div class="ly-head"><span>歌詞 · lyrics</span><button class="key sm" data-act="lyrics" aria-label="Close lyrics"><span data-i="close"></span></button></div>
+          <div class="ly-lines" id="ly"></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="label">Icon styles, pick one <span class="jp">アイコン</span></h2>
+    <div class="sets" id="sets"></div>
+  </section>
+
+  <section>
+    <h2 class="label">Logo ideas <span class="jp">ロゴ</span></h2>
+    <div class="logos">
+      <div class="logo"><span class="app-icon xl" data-swirl></span><div><b>A · Swirl key</b><p>A sound spiral on a play-key tile. Home Screen name: Music.</p></div></div>
+      <div class="logo"><span class="lcd tile-lcd">M</span><div><b>B · Tiny screen</b><p>The letter on a little LCD, like the player screen.</p></div></div>
+    </div>
+  </section>
+
+  <footer>Sample only. Fake songs and lyrics, written for this page. Tell Claude “yes, that” or list changes.</footer>
+</main>
+<script src="sample.js"></script>

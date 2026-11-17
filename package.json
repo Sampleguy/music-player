@@ -1,0 +1,19 @@
+{
+  "name": "music-player",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "import": "node scripts/import.mjs",
+    "backup": "node scripts/backup.mjs",
+    "restore": "node scripts/backup.mjs restore"
+  },
+  "devDependencies": {
+    "music-metadata": "^12.4.0",
+    "wrangler": "^4.161.0"
+  },
+  "allowScripts": {
+    "workerd@1.20261110.1": true
+  }
+}

@@ -1,0 +1,30 @@
+/* Red: dark wine background, red accent. Colors only. Same names in every file in colors/. Shapes and fonts are in looks/.
+   Classic uses bg..backdrop; Retro also uses ink..screen-dot (outlines, keys, LCD screens). */
+:root {
+  --bg: #1c0f10;
+  --dot: #3d2124;
+  --surface: #2c1719;
+  --bar: #221213;
+  --text: #f7ecec;
+  --text-dim: #c79fa1;
+  --border: #3d2124;
+  --accent: #ff7377;
+  --accent-text: #ff7377;
+  --on-accent: #1c0f10;
+  --error: #ffb4a8;
+  --backdrop: rgba(0, 0, 0, 0.6);
+  --ink: #725758;
+  --shadow: #725758;
+  --sink: rgba(0, 0, 0, 0.5);
+  --hi: rgba(255, 255, 255, 0.14);
+  --key: #3b2e2f;
+  --key-2: #2e2122;
+  --key-ink: #f7ecec;
+  --play: #ff7377;
+  --play-ink: #1c0f10;
+  --screen: #2a1416;
+  --screen-ink: #ffc9c4;
+  --screen-dim: #d8938e;
+  --screen-dot: #ffc9c414;
+  color-scheme: dark;
+}

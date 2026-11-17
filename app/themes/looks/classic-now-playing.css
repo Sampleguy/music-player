@@ -1,0 +1,115 @@
+/* Classic: Now playing (B-28). Flat dark: big cover with a soft shadow, large bold title, thin seek bar,
+   centered round keys, lyrics with a clear current line. Colors only through variables from colors/.
+   classic.css always loads under the other looks, so every rule here only applies while no other look
+   file is loaded (link#look has no href = Classic). Imported by classic.css. */
+:root:not(:has(#look[href])) {
+  .np { background: linear-gradient(var(--surface), var(--bg) 70%); gap: 20px; }
+  .np-top { width: min(100%, 420px); align-self: center; }
+  .np-top button { border-radius: 50%; }
+
+  /* Big cover */
+  .np-art { width: min(100%, 44dvh, 420px); border-radius: 12px; box-shadow: 0 18px 44px var(--sink); }
+
+  /* Title, artist, seek bar, times */
+  .np-info { width: min(100%, 420px); grid-template-columns: 1fr 1fr; gap: 0; font-size: 12px; }
+  .np-info .title, .np-info .artist { text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .np-info .title { font-size: 26px; font-weight: 800; letter-spacing: -.01em; line-height: 1.2; }
+  .np-info .artist { font-size: 17px; margin: 2px 0 12px; }
+  .np-info .pos { grid-area: 4 / 1; }
+  .np-info .dur { grid-area: 4 / 2; justify-self: end; }
+  .np-info input { grid-area: 3 / 1 / 4 / -1; -webkit-appearance: none; appearance: none; height: 24px; margin: 0; background: none; cursor: pointer; }
+  .np-info input::-webkit-slider-runnable-track {
+    height: 4px; border-radius: 2px;
+    background: linear-gradient(to right, var(--accent) var(--p, 0%), color-mix(in srgb, var(--text) 22%, transparent) var(--p, 0%));
+  }
+  .np-info input::-moz-range-track { height: 4px; border-radius: 2px; background: color-mix(in srgb, var(--text) 22%, transparent); }
+  .np-info input::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--accent); }
+  .np-info input::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -5px; border-radius: 50%; background: var(--text); transition: transform .15s; }
+  .np-info input:active::-webkit-slider-thumb { transform: scale(1.3); }
+  .np-info input::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: var(--text); }
+
+  /* Keys: round, centered; play is the big filled accent one */
+  .np-controls { width: min(100%, 420px); }
+  .np-controls button { display: inline-grid; place-items: center; min-width: 48px; min-height: 48px; border-radius: 50%; transition: background-color .15s, transform .15s; }
+  .np-controls button:active { transform: scale(.92); }
+  .np-controls .np-play { width: 72px; height: 72px; padding: 0; box-shadow: 0 8px 24px var(--sink); }
+  .np-controls .np-play .ic { width: 34px; height: 34px; }
+  .np-one { right: 6px; top: 6px; }
+
+  /* Lyrics: big bold lines, the current one bright, the others dim; edges fade out */
+  .np.lyrics .np-lyrics {
+    flex: 1 1 0; min-height: 0; height: auto; width: min(100%, 420px); padding: 8px 0 40%; scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(transparent, #000 5%, #000 85%, transparent); mask-image: linear-gradient(transparent, #000 5%, #000 85%, transparent);
+  }
+  .np-lyrics::-webkit-scrollbar { display: none; }
+  .np .np-lyrics :is(button:not(.np-lyrics-ai *), p.line) { margin-bottom: 6px; font-size: 22px; font-weight: 700; line-height: 1.35; letter-spacing: -.01em; transition: color .3s, background-color .15s; }
+  .np .np-lyrics button.on { color: var(--text); font-weight: 800; }
+
+  /* Top right keys (playlists / recent / theme / import), phone and Mac, same spot as the other looks (B-40) */
+  .brand { display: flex; justify-content: flex-end; margin: 8px var(--space); }
+  .brand .tile-lcd, .brand .word { display: none; }
+  .brand-keys { display: flex; gap: 8px; }
+  .brand-keys .key {
+    display: inline-flex; align-items: center; justify-content: center; min-width: 40px; height: 40px; padding: 0; border: 0; border-radius: 99px;
+    background: var(--surface); color: var(--text); cursor: pointer;
+  }
+
+  @media (hover: hover) {
+    .np-top button:hover, .np-controls button:hover { background: color-mix(in srgb, var(--text) 8%, transparent); }
+    .np-controls .np-play:hover { background: var(--accent); filter: brightness(1.08); }
+    .np .np-lyrics button:not(.np-lyrics-ai *) { width: calc(100% + 16px); margin-left: -8px; }
+  }
+
+  /* Wide screens (Mac): the pop-up holds one centered card. Lyrics on: the cover stays, lyrics take a column on the right. */
+  @media (min-width: 900px) {
+    .np { background: var(--bg); align-items: center; }
+    .np-card {
+      display: grid; grid-template-columns: 380px; gap: 40px; max-height: 100%; box-sizing: border-box; padding: 32px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 30px 80px var(--sink);
+    }
+    .np-main { display: flex; flex-direction: column; gap: 20px; min-height: 0; }
+    .np-top, .np-art, .np-info, .np-controls { width: 100%; }
+    .np-art { width: min(100%, 50dvh); }
+    .np.lyrics .np-card { grid-template-columns: 380px minmax(0, 480px); height: min(720px, 100%); }
+    .np.lyrics .np-art { display: block; }
+    .np.lyrics .np-ly { display: flex; flex-direction: column; min-height: 0; }
+    .np.lyrics .np-lyrics { width: 100%; padding-bottom: 50%; }
+    .np .np-lyrics :is(button:not(.np-lyrics-ai *), p.line) { font-size: 26px; }
+
+    /* Two cards (themes/layouts/two-cards.css places them): Library card left, the same Now playing card
+       always open right, filling the window height. The mic key still swaps lyrics in; no ✕ (nothing to close). */
+    & {
+      body { padding: 24px 24px 0; box-sizing: border-box; }
+      #app { padding-top: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; }
+      .np:not([open]) { display: block; padding: 0; background: none; }
+      .np:not([open]) .np-card { width: 100%; height: 100%; max-height: none; justify-content: center; align-content: center; grid-template-columns: minmax(0, 380px); }
+      .np:not([open]).lyrics .np-card { grid-template-columns: minmax(0, 380px) minmax(0, 1fr); }
+      .np:not([open]) .np-close { visibility: hidden; }
+      /* the mini player is hidden here: Queue goes under the player (top right keys: see above) */
+      .brand { margin: 0 0 16px; }
+      .np-keys .jp { display: none; }
+      .np:not([open]) .np-keys { display: flex; justify-content: center; gap: 8px; }
+      .np:not([open]) .np-lykey { display: none; }
+      .np-keys .key {
+        display: inline-flex; align-items: center; gap: 8px; min-width: 40px; height: 40px; padding: 0 12px; border: 0; border-radius: 99px;
+        background: var(--surface); color: var(--text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+      }
+      .np-keys .ic { width: 18px; height: 18px; }
+      /* Library bar: keys only, in a row under the clock (classic.css); the Full library key sits with them (B-36, B-48) */
+      #app .view-key { height: 32px; padding: 0 14px; border: 1px solid var(--border); border-radius: 99px; background: none; color: var(--text); font: inherit; font-size: 13px; font-weight: 600; }
+      #app .view-key:hover { background: color-mix(in srgb, var(--text) 8%, transparent); }
+    }
+
+    /* Full library (themes/layouts/full-library.css places it): the Now playing bar, flat */
+    &[data-view="full"] {
+      .np:not([open]) .np-card { padding: 14px 24px; border-radius: 16px; box-shadow: 0 12px 40px var(--sink); }
+      .np:not([open]) .np-art { border-radius: 6px; box-shadow: 0 6px 16px var(--sink); }
+      .np:not([open]) .np-info .title { font-size: 17px; }
+      .np:not([open]) .np-info .artist { font-size: 14px; }
+      .np:not([open]) .np-controls button { min-width: 44px; min-height: 44px; }
+      .np:not([open]) .np-controls .np-play { width: 52px; height: 52px; }
+      .np:not([open]) .np-controls .np-play .ic { width: 26px; height: 26px; }
+      #app .cols { background: var(--surface); }
+    }
+  }
+}

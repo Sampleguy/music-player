@@ -1,0 +1,30 @@
+/* Cream: the B-20 sample's base paint (Retro default), butter play key, coral accent. Colors only. Same names in every file in colors/. Shapes and fonts are in looks/.
+   Classic uses bg..backdrop; Retro also uses ink..screen-dot (outlines, keys, LCD screens). */
+:root {
+  --bg: #EFEAE0;
+  --dot: #E2DACB;
+  --surface: #FFFFFF;
+  --bar: #FAF7F2;
+  --text: #231F20;
+  --text-dim: #6B6461;
+  --border: #E2DACB;
+  --accent: #F4A28C;
+  --accent-text: #A4442B;
+  --on-accent: #231F20;
+  --error: #B3261E;
+  --backdrop: rgba(35, 31, 32, 0.45);
+  --ink: #231F20;
+  --shadow: #231F20;
+  --sink: rgba(35, 31, 32, 0.18);
+  --hi: rgba(255, 255, 255, 0.65);
+  --key: #FFFFFF;
+  --key-2: #E6EBF0;
+  --key-ink: #231F20;
+  --play: #F6D365;
+  --play-ink: #231F20;
+  --screen: #E2E8DF;
+  --screen-ink: #231F20;
+  --screen-dim: #5E6A5C;
+  --screen-dot: rgba(35, 31, 32, 0.07);
+  color-scheme: light;
+}

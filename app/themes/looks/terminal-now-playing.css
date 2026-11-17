@@ -1,0 +1,109 @@
+/* Terminal: Now playing, ported from the B-26 sample's .np panel (design/looks-terminal.css).
+   iPhone: the same full-screen pop-up as Classic (swipe down / [close] / Esc closes), as a square box.
+   Wide screens (Mac): always-open box beside the library. Colors only through variables from colors/.
+   Imported by terminal.css (which also draws the box line, its "─ now playing ─" name and the seek bar). */
+.np { background: var(--bg); color: var(--text); padding: 22px 12px 16px; justify-content: center; }
+.np-card { display: flex; flex-direction: column; gap: 12px; width: min(100%, 520px); min-height: 0; align-self: center; padding: 22px 16px 16px; }
+.np-card::before { content: "─ now playing ─"; }
+.np.lyrics .np-card { flex: 1 1 auto; }
+.np .np-head, .np .np-top .np-lyr { display: none; } /* [lyrics] key below does it */
+
+/* Text keys: icons hidden, the key's name in [brackets] */
+.np :is(.np-top, .np-controls, .ly-head) button { padding: 6px 0; border: 0; background: none; color: var(--text); font-size: 14px; cursor: pointer; }
+.np :is(.np-top, .np-controls, .ly-head) .ic { display: none; }
+.np :is(.np-top, .np-controls, .ly-head) button::before { content: "[" attr(aria-label) "]"; text-transform: lowercase; white-space: nowrap; }
+.np .np-controls [data-act=shuffle]::before { content: "[shuf]"; }
+.np .np-controls [data-act=prev]::before { content: "[prev]"; }
+.np .np-controls [data-act=repeat]::before { content: "[rep]"; }
+.np .ly-head .key::before { content: "[x]"; }
+.np :is(.np-top, .np-controls, .ly-head, .np-keys) button:hover::before { text-decoration: underline; }
+.np-controls button.on::before { background: var(--accent); color: var(--on-accent); }
+.np .np-controls .np-play { color: var(--accent-text); font-weight: 700; }
+.np-one { position: static; margin-left: 2px; font-size: 12px; color: var(--accent-text); }
+.np-top { justify-content: flex-start; }
+
+/* Cover: a dotted square box; text-only lines below it */
+.np-art {
+  justify-self: center; align-self: center; width: min(100%, 38dvh, 260px); border: 1px solid var(--ink);
+  background: radial-gradient(var(--dot) 1px, transparent 1.2px) 0 0 / 6px 6px, var(--bg); box-shadow: none; transform: none;
+}
+.np-art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* title: / artist: lines, ASCII seek bar (terminal.css), "0:00 / 3:34" */
+.np-info { width: 100%; grid-template-columns: auto auto 1fr; gap: 0; font-size: 14px; }
+.np-info .title, .np-info .artist { grid-column: 1 / -1; text-align: left; font-size: 14px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.np-info .title { font-weight: 700; }
+.np-info .title::before { content: "title:  "; white-space: pre; font-weight: 400; color: var(--text-dim); }
+.np-info .artist { margin-bottom: 6px; }
+.np-info .artist::before { content: "artist: "; white-space: pre; color: var(--text-dim); }
+.np-info .lvl { display: none; }
+.np-info input { grid-area: 3 / 1 / 4 / -1; width: 100%; }
+.np-info .pos { grid-area: 4 / 1; }
+.np-info .dur { grid-area: 4 / 2; justify-self: start; }
+.np-info .dur::before { content: " / "; white-space: pre; }
+.np-info :is(.pos, .dur) { color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.np-info:focus-within { outline: 0; }
+
+.np-controls { justify-content: flex-start; gap: 4px 10px; flex-wrap: wrap; }
+/* [lyrics] [queue]: their own words, small Japanese and icons hidden; on = filled */
+.np-keys { display: flex; gap: 10px; padding-top: 6px; border-top: 1px dashed var(--ink); }
+.np .np-keys button { display: inline-flex; padding: 2px 0; border: 0; background: none; color: var(--text); font-size: 14px; text-transform: lowercase; cursor: pointer; }
+.np .np-keys :is(.ic, .jp) { display: none; }
+.np .np-keys button::before { content: "["; } .np .np-keys button::after { content: "]"; }
+.np .np-keys button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+
+/* Lyrics: a log. Lines dim, the current one bright with the cursor. */
+.np-ly { display: none; }
+.np.lyrics .np-ly { display: flex; flex-direction: column; order: -2; flex: 1 1 0; min-height: 0; width: 100%; padding-top: 6px; border-top: 1px solid var(--ink); }
+.np.lyrics .np-main > .np-art { display: none; } /* phone: lyrics take the cover's place */
+.ly-head { display: flex; justify-content: space-between; align-items: center; font-size: 0; }
+.ly-head span::before { content: "$ tail -f lyrics.log"; font-size: 14px; color: var(--accent-text); }
+.np-lyrics, .np.lyrics .np-lyrics { order: 0; width: auto; height: auto; flex: 1 1 0; min-height: 0; padding: 4px 0 40%; scrollbar-width: none; }
+.np-lyrics::-webkit-scrollbar { display: none; }
+.np .np-lyrics :is(button, p.line) {
+  display: block; width: 100%; margin: 0; padding: 2px 4px; border: 0; background: none; text-align: left;
+  font: inherit; font-size: 14px; line-height: 1.5; color: var(--text-dim); white-space: pre-wrap;
+}
+.np .np-lyrics button.on { color: var(--text); font-weight: 700; }
+.np .np-lyrics button.on::after {
+  content: ""; display: inline-block; width: .6em; height: 1.1em; margin-left: .3em; vertical-align: -.2em;
+  background: var(--text); animation: blink 1s step-end infinite;
+}
+.np .np-lyrics p.line { color: var(--text); } /* plain lyrics: all lines lit */
+@media (hover: hover) {
+  .np .np-lyrics button { cursor: pointer; }
+  .np .np-lyrics button:hover { background: var(--text); color: var(--bg); }
+}
+
+/* Two cards on Mac (themes/layouts/two-cards.css puts Now playing beside the library).
+   ≥ 1100 px: cover column left, lyrics log right (line between them, like the sample); narrower: lyrics take the cover's place. */
+@media (min-width: 900px) {
+  :root {
+    .np:not([open]) { position: relative; } /* the box name sits on the card's line; the card itself scrolls (clips) */
+    .np:not([open]) .np-card::before { content: none; }
+    .np:not([open])::before { content: "─ now playing ─"; position: absolute; top: -.8em; left: 10px; z-index: 2; padding: 0 4px; background: var(--bg); color: var(--text-dim); }
+    .np:not([open]) .np-card { display: grid; gap: 12px 24px; align-content: start; width: auto; padding: 24px 18px 18px; }
+    .np:not([open]) .np-main { display: grid; gap: 12px; justify-items: stretch; align-content: start; }
+    .np:not([open]) .np-top { display: none; }
+    .np:not([open]).lyrics .np-ly { display: grid; grid-template-rows: auto minmax(0, 1fr); order: 0; }
+    .np:not([open]) .np-lyrics { height: 340px; flex: none; }
+  }
+}
+@media (min-width: 1100px) {
+  :root {
+    .np:not([open]) .np-card { grid-template-columns: 340px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); align-content: stretch; }
+    .np:not([open]).lyrics .np-main > .np-art { display: block; }
+    .np:not([open]).lyrics .np-ly { height: 100%; min-height: 0; padding: 0 0 0 16px; border-top: 0; border-left: 1px solid var(--ink); }
+    .np:not([open]) .np-lyrics { height: auto; align-self: stretch; }
+  }
+}
+/* Full library (themes/layouts/full-library.css places it): a status bar box */
+@media (min-width: 900px) {
+  :root[data-view="full"] {
+    .np:not([open]) .np-card { padding: 16px 18px 12px; }
+    .np:not([open]) .np-art { background: var(--surface); }
+    .np:not([open]) .np-info .artist { margin: 0; }
+    .np:not([open]) .np-info .dur::before { content: none; } /* the seek bar sits between the times here */
+    .np:not([open]) .np-keys { padding: 0; border: 0; }
+  }
+}
