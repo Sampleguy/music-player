@@ -50,6 +50,7 @@ button, input { font-family: var(--font); }
   position: absolute; top: -.8em; left: 10px; z-index: 2; padding: 0 4px; background: var(--bg); color: var(--text-dim);
 }
 #app::before { content: "─ library ─"; }
+:root #app { overflow: visible; } /* the box name sits on the top line (phone + Mac); the song list still scrolls inside */
 #app { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; max-width: var(--card); margin: 0 auto; padding: 18px 14px 10px; }
 .home-top, .home-list, .results { display: contents; }
 
@@ -154,7 +155,6 @@ dialog.sheet .title::before { content: "# "; color: var(--text-dim); }
   :root {
     --lib-w: 480px; --cards-gap: 20px; --page-max: 1320px;
     .brand { margin-bottom: 18px; }
-    #app { overflow: visible; } /* shows the box name on the top line; the song list still scrolls inside */
     #app .queue header { padding: 0; }
     #app .queue h2 { margin: 0; font-size: 1em; text-transform: lowercase; }
     #app .queue h2::before { content: "# "; color: var(--text-dim); }

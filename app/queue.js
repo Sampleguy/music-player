@@ -71,6 +71,7 @@ export function advance() {
 
 // "Previous": the song before in play order; wraps only with repeat all.
 export function back() {
+  if (pos >= 0 && now !== source[order[pos]]) return at(pos); // now is an "up next" song: back to the one before it
   if (pos > 0) return at(pos - 1);
   if (repeat === "all" && order.length) return at(order.length - 1);
   return pos === 0 ? at(0) : null;

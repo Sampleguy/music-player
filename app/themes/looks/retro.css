@@ -128,6 +128,7 @@ body {
 .track.playing { background: var(--key-2); border-color: var(--ink); box-shadow: 2px 3px 0 var(--shadow); }
 .track.playing .title { color: var(--text); }
 .track .meta { display: grid; }
+.track > .meta:first-child { grid-column: 1 / 3; } /* rows with no cover (playlist list): text takes the cover slot too */
 .track .title { font-weight: 700; }
 .track .artist { font-size: .82rem; }
 .track .t { display: inline; font: 400 .85rem var(--font-lcd); color: var(--text-dim); font-variant-numeric: tabular-nums; }
