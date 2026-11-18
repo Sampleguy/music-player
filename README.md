@@ -96,8 +96,9 @@ Use your own folder path. This uploads new songs, covers and lyrics, and removes
 - When you import songs from the app, a check step shows each song first with a badge if lyrics were found online. Nothing is saved until you confirm.
 - The Albums and Artists screens show a grid of covers. You can set your own artist picture.
 
-## Known issue
-On iPhone, tapping the lock screen player may open another Home Screen app instead of this one. Playback is not affected.
+## Known issues
+- On iPhone, tapping the lock screen player may open another Home Screen app instead of this one. Playback is not affected.
+- iPhone Home Screen app: after Pause on the lock screen, Play does nothing (iOS limit). Unlock and tap Play in the app, or use the app in a Safari tab where lock-screen Play works.
 
 ## Settings in the app
 The Theme key (palette icon) picks a theme and a color. In the same sheet, **Your name** sets the greeting name and **Retro theme name** renames the Retro theme. Both stay on that device only.
